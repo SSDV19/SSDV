@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 Day Immersion Program by JNN — Malaysia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0F0D;
+    --surface:#111712;
+    --card:#161D17;
+    --paper:#F2F0E6;
+    --paper-dim:#C9C6B8;
+    --trace:#4ADE80;
+    --trace-dim:#2B6B43;
+    --alert:#FF6B4A;
+    --steel:#8B96A8;
+    --gold:#FFD166;
+    --sky:#5BA8D6;
+    --hair: rgba(242,240,230,0.12);
+    --hair-strong: rgba(242,240,230,0.22);
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background-image: radial-gradient(circle, rgba(242,240,230,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events:none;
+    z-index:0;
+  }
+  /* slow drifting ambient glow — the "live wallpaper" layer */
+  .ambient-blobs{
+    position:fixed; inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:0.4;
+    will-change:transform;
+  }
+  .blob1{
+    width:46vw; height:46vw; max-width:560px; max-height:560px;
+    background:radial-gradient(circle, rgba(74,222,128,0.55), transparent 70%);
+    top:-12%; left:-12%;
+    animation: drift1 34s ease-in-out infinite alternate;
+  }
+  .blob2{
+    width:38vw; height:38vw; max-width:480px; max-height:480px;
+    background:radial-gradient(circle, rgba(255,107,74,0.45), transparent 70%);
+    bottom:-14%; right:-10%;
+    animation: drift2 42s ease-in-out infinite alternate;
+  }
+  .blob3{
+    width:32vw; height:32vw; max-width:400px; max-height:400px;
+    background:radial-gradient(circle, rgba(91,168,214,0.4), transparent 70%);
+    top:38%; left:58%;
+    animation: drift3 50s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(8vw,6vw) scale(1.18); } }
+  @keyframes drift2{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(-7vw,-5vw) scale(1.1); } }
+  @keyframes drift3{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(-6vw,5vw) scale(0.88); } }
+  @media (prefers-reduced-motion: reduce){ .blob{ animation:none !important; } }
+
+  /* live animated particle-network background */
+  #bgcanvas{
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.6;
+  }
+
+  #spotlight{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(74,222,128,0.06), transparent 60%);
+  }
+  @media (max-width:860px){ #spotlight{ display:none; } }
+
+  .wrap{ position:relative; max-width:1180px; margin:0 auto; padding:0 32px; z-index:2; }
+  @media (max-width:600px){ .wrap{ padding:0 20px; } }
+
+  /* topbar */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 40px;
+    backdrop-filter: blur(10px);
+    background:linear-gradient(to bottom, rgba(11,15,13,0.92), rgba(11,15,13,0));
+  }
+  @media (max-width:700px){ .topbar{ padding:16px 20px; } }
+  .back-link{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em;
+    color:var(--steel); text-decoration:none; display:flex; align-items:center; gap:8px;
+    transition:color 0.25s;
+  }
+  .back-link:hover{ color:var(--trace); }
+  .topbar-tag{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em;
+    color:var(--trace); text-transform:uppercase;
+    border:1px solid var(--trace-dim); padding:5px 12px;
+  }
+
+  /* ===== hero with airplane outline background ===== */
+  .phero{
+    position:relative;
+    min-height:72vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:150px 0 70px;
+    overflow:hidden;
+  }
+  .plane-art{
+    position:absolute;
+    top:8%; right:-6%;
+    width:60%;
+    max-width:680px;
+    opacity:0.16;
+    z-index:0;
+    pointer-events:none;
+  }
+  .plane-art svg{ width:100%; height:auto; display:block; }
+  .plane-trail{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.5;
+  }
+  .phero-inner{ position:relative; z-index:2; }
+  .phero-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--trace); display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .phero-eyebrow::before{ content:''; width:6px; height:6px; background:var(--trace); display:inline-block; }
+  h1.phero-title{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(34px,6.2vw,64px); line-height:1.05; letter-spacing:-0.01em;
+    max-width:22ch;
+  }
+  h1.phero-title .accent{ color:var(--trace); }
+  .flag-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:13px; letter-spacing:0.04em;
+    color:var(--trace); border:1px solid var(--trace-dim); background:rgba(74,222,128,0.08);
+    padding:7px 14px; margin-top:24px;
+  }
+  .phero-sub{
+    font-family:var(--body); font-size:clamp(15.5px,1.7vw,18px); color:var(--paper-dim);
+    max-width:62ch; margin-top:24px; line-height:1.7;
+  }
+  .route-strip{
+    display:flex; gap:10px; flex-wrap:wrap; margin-top:36px;
+  }
+  .route-chip{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.04em; color:var(--paper-dim);
+    border:1px solid var(--hair-strong); padding:6px 12px;
+  }
+
+  /* ===== day sections ===== */
+  .day-section{ position:relative; padding:64px 0 8px; }
+  .day-header{
+    display:flex; align-items:baseline; gap:20px; margin-bottom:46px;
+    border-bottom:1px solid var(--hair); padding-bottom:22px;
+  }
+  .day-number{
+    font-family:var(--display); font-weight:700; font-size:clamp(46px,6vw,72px);
+    color:var(--trace); line-height:1; letter-spacing:-0.02em;
+  }
+  .day-label{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.08em; text-transform:uppercase; color:var(--steel);
+  }
+  .day-route{
+    font-family:var(--display); font-size:clamp(18px,2.2vw,24px); font-weight:600; color:var(--paper); margin-top:4px;
+  }
+
+  /* destination rows — alternating image / text */
+  .dest-row{
+    display:flex;
+    align-items:center;
+    gap:52px;
+    padding:38px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .day-section .dest-row:last-of-type{ border-bottom:none; }
+  .dest-row.flip{ flex-direction:row-reverse; }
+  .dest-photo-frame{
+    flex:1 1 44%;
+    min-width:260px;
+    height:340px;
+    background:
+      linear-gradient(135deg, rgba(74,222,128,0.05), rgba(255,107,74,0.04)),
+      var(--card);
+    border:1px solid var(--hair-strong);
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .dest-photo-frame::before{
+    content:'';
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(74,222,128,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,222,128,0.06) 1px, transparent 1px);
+    background-size:24px 24px;
+    opacity:0.6;
+  }
+  .dest-photo-frame img{
+    position:relative; z-index:1;
+    max-width:100%;
+    max-height:100%;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    box-shadow:0 18px 36px -16px rgba(0,0,0,0.6);
+    border-radius:14px;
+  }
+  .dest-text{ flex:1 1 50%; min-width:260px; }
+  .dest-index{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--trace);
+    margin-bottom:10px; display:block;
+  }
+  .dest-text h3{
+    font-family:var(--display); font-size:clamp(21px,2.6vw,28px); font-weight:700; color:var(--paper);
+    margin-bottom:14px; letter-spacing:-0.005em;
+  }
+  .dest-text p{
+    font-family:var(--body); font-size:15.5px; color:var(--paper-dim); line-height:1.75; max-width:48ch;
+  }
+  @media (max-width:760px){
+    .dest-row, .dest-row.flip{ flex-direction:column; gap:24px; }
+    .dest-photo-frame{ width:100%; height:300px; }
+  }
+
+  /* connecting flight-path divider between days */
+  .flight-divider{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    padding:8px 0 28px;
+    color:var(--trace-dim);
+  }
+  .flight-divider .dash{
+    flex:1; height:1px; background:repeating-linear-gradient(to right, var(--hair-strong) 0 6px, transparent 6px 12px);
+  }
+  .flight-divider svg{ width:22px; height:22px; flex-shrink:0; opacity:0.8; }
+
+  /* end / footer */
+  .end-section{ padding:50px 0 100px; }
+  .end-card{
+    border:1px solid var(--hair-strong); background:var(--card); padding:48px;
+    text-align:left;
+  }
+  @media (max-width:700px){ .end-card{ padding:30px 22px; } }
+  .end-card h2{ font-family:var(--display); font-size:clamp(24px,3.6vw,34px); font-weight:700; margin-bottom:14px; max-width:24ch; }
+  .end-card p{ color:var(--paper-dim); font-size:15px; max-width:60ch; line-height:1.65; margin-bottom:26px; }
+  .btn{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.04em; padding:14px 26px;
+    text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    transition:all 0.25s; border:1px solid var(--hair-strong);
+  }
+  .btn-primary{ background:var(--trace); color:var(--ink); border-color:var(--trace); font-weight:600; }
+  .btn-primary:hover{ background:#67e895; transform:translateY(-2px); }
+  .btn-ghost{ color:var(--paper); background:transparent; }
+  .btn-ghost:hover{ border-color:var(--trace); color:var(--trace); }
+
+  footer{
+    padding:32px 32px; border-top:1px solid var(--hair); font-family:var(--mono); font-size:11.5px;
+    color:var(--steel); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    position:relative; z-index:2; max-width:1180px; margin:0 auto;
+  }
+
+  .reveal{ opacity:0; transform:translateY(20px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } .reveal{ opacity:1; transform:none; } }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--trace); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<div class="ambient-blobs">
+  <span class="blob blob1"></span>
+  <span class="blob blob2"></span>
+  <span class="blob blob3"></span>
+</div>
+
+<canvas id="bgcanvas"></canvas>
+
+<div id="spotlight"></div>
+
+<div class="topbar">
+  <a href="index.html#exposure" class="back-link">← Back to portfolio</a>
+  <span class="topbar-tag">JNN · International Immersion 2026</span>
+</div>
+
+<section class="phero">
+  <div class="plane-art">
+    <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#4ADE80" stroke-width="2">
+      <path d="M40 220 L300 180 L520 130 C540 125 555 130 555 142 C555 154 540 162 520 166 L300 210 L210 230 L150 280 L110 280 L150 215 L40 232 Z" />
+      <path d="M280 188 L260 130 L280 126 L320 178" />
+      <path d="M310 200 L340 250 L362 246 L345 192" />
+      <circle cx="535" cy="148" r="4" />
+      <path d="M555 142 C610 142 650 140 650 140" stroke-dasharray="4 8" opacity="0.6"/>
+    </svg>
+  </div>
+  <div class="wrap phero-inner">
+    <div class="phero-eyebrow">JNN Group of Institutions · Outbound Program</div>
+    <h1 class="phero-title">5 Day Immersion Program <span class="accent">by JNN</span></h1>
+    <span class="flag-pill">🇲🇾 Malaysia Immersion Program — Kuala Lumpur &amp; beyond</span>
+    <p class="phero-sub">Five days across Kuala Lumpur, Putrajaya, Cyberjaya, and Genting Highlands — moving between government institutions, universities, industry briefings, and cultural landmarks as part of JNN's International Immersion Programme 2026.</p>
+    <div class="route-strip">
+      <span class="route-chip">Putrajaya</span>
+      <span class="route-chip">Kuala Lumpur</span>
+      <span class="route-chip">Cyberjaya</span>
+      <span class="route-chip">Genting Highlands</span>
+      <span class="route-chip">Negeri Sembilan</span>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- DAY 1 -->
+  <section class="day-section" id="day1">
+    <div class="day-header">
+      <span class="day-number">01</span>
+      <div>
+        <div class="day-label">Day One</div>
+        <div class="day-route">Putrajaya → Berjaya Times Square</div>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img02.jpg" alt="Putra Mosque, Putrajaya"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 01</span>
+        <h3>Putrajaya</h3>
+        <p>The programme opened in Putrajaya, Malaysia's purpose-built federal administrative capital. Walking through the planned boulevards past the pink-domed Putra Mosque and the Perdana Putra, it was a first look at how a nation designs a city around its institutions of government — a fitting start to an immersion built around government and industry exposure.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img21.jpg" alt="Berjaya Times Square, Kuala Lumpur"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 02</span>
+        <h3>Berjaya Times Square</h3>
+        <p>The afternoon shifted gears to Berjaya Times Square — one of Kuala Lumpur's largest retail and entertainment complexes. Between the indoor theme park and the dense run of retail floors, it was a quick, energetic read on everyday urban life and consumer culture in the city, before the programme moved into its more formal briefings.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="flight-divider">
+    <span class="dash"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16l8-2 7-7c1-1 2-1 2 0s0 1-1 2l-7 7-2 8-2-1-1-5-5-2-1-2 5-1z"/></svg>
+    <span class="dash"></span>
+  </div>
+
+  <!-- DAY 2 -->
+  <section class="day-section" id="day2">
+    <div class="day-header">
+      <span class="day-number">02</span>
+      <div>
+        <div class="day-label">Day Two</div>
+        <div class="day-route">TRX → Cyberjaya → China Town</div>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img04.jpg" alt="Group at TRX, My Portal 5G exhibit"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 01</span>
+        <h3>TRX — My Portal 5G</h3>
+        <p>Day two began at Tun Razak Exchange, Kuala Lumpur's newest financial district, for a session at the My Portal 5G exhibit. It was a direct look at how Malaysia is rolling out national 5G infrastructure — a useful counterpoint for a group of engineering students used to talking about networks only in theory.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img06.jpg" alt="University of Cyberjaya, Power BI workshop"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 02</span>
+        <h3>University of Cyberjaya — Power BI Workshop</h3>
+        <p>From there, the group moved to Cyberjaya for a hands-on Power BI workshop at the University of Cyberjaya. The session walked through building dashboards and reading data stories from raw numbers — a practical skill that travelled straight back into every team member's own project work.</p>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img05.jpg" alt="Petaling Street Chinatown at night"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 03</span>
+        <h3>China Town</h3>
+        <p>The day closed in Kuala Lumpur's Chinatown along Petaling Street — red lanterns overhead, stalls lit up on either side, and the kind of after-dark energy that's hard to plan for and easy to remember. A good reset before two more formal days of institutional visits.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="flight-divider">
+    <span class="dash"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16l8-2 7-7c1-1 2-1 2 0s0 1-1 2l-7 7-2 8-2-1-1-5-5-2-1-2 5-1z"/></svg>
+    <span class="dash"></span>
+  </div>
+
+  <!-- DAY 3 -->
+  <section class="day-section" id="day3">
+    <div class="day-header">
+      <span class="day-number">03</span>
+      <div>
+        <div class="day-label">Day Three</div>
+        <div class="day-route">Royal Selangor → Bank Negara → Education Ministry → Re-Skills</div>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img07.jpg" alt="Group at Royal Selangor Pewter Museum"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 01</span>
+        <h3>Royal Selangor Pewter Museum</h3>
+        <p>The third day opened at the Royal Selangor Pewter Museum, home to the world's largest pewter tankard, for a guided walk through Malaysia's pewter-crafting heritage — from raw tin to finished tableware. The full cohort posed for the day's group photo beside the giant tankard before heading into the city's financial and policy institutions.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img10.jpg" alt="Speaking at Bank Negara podium"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 02</span>
+        <h3>Bank Negara</h3>
+        <p>At Bank Negara Malaysia, the country's central bank, the visit moved from observation to participation — including a turn at the podium addressing the group. It was a brief but pointed exposure to how monetary policy and financial institutions shape a country's economy from the inside.</p>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img08.jpg" alt="Lunch with education ministry higher officials"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 03</span>
+        <h3>Lunch with Education Ministry Higher Officials</h3>
+        <p>The group sat down for a formal lunch with senior officials from Malaysia's education ministry — a chance to hear directly about how the country approaches higher education policy, and to compare notes on what an "international immersion programme" looks like from the host side of the table.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img09.jpg" alt="Re-skills Centre visit"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 04</span>
+        <h3>Re-Skills Centre</h3>
+        <p>The day closed at the Re-Skills Centre, talking through how Malaysia is structuring large-scale workforce upskilling programmes for a fast-changing job market — a theme that echoed through several of the week's other stops, from 5G infrastructure to data workshops.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="flight-divider">
+    <span class="dash"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16l8-2 7-7c1-1 2-1 2 0s0 1-1 2l-7 7-2 8-2-1-1-5-5-2-1-2 5-1z"/></svg>
+    <span class="dash"></span>
+  </div>
+
+  <!-- DAY 4 -->
+  <section class="day-section" id="day4">
+    <div class="day-header">
+      <span class="day-number">04</span>
+      <div>
+        <div class="day-label">Day Four</div>
+        <div class="day-route">INTI University → Genting Highlands → Batu Caves</div>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img11.jpg" alt="INTI University campus tour"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 01</span>
+        <h3>INTI University — Campus Tour</h3>
+        <p>The fourth day began with a tour of INTI International University's campus, walking through its faculties of engineering, quantity surveying, and data science &amp; information technology — a look at how a Malaysian private university structures its programmes alongside industry needs.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img13.jpg" alt="MoU signing ceremony with INTI University"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 02</span>
+        <h3>INTI University — MoU Signing</h3>
+        <p>The campus visit closed with a formal Memorandum of Understanding signed between JNN Group of Institutions and INTI University — a step toward a longer-term academic partnership between the two institutions, marked here with the whole delegation in the room.</p>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img12.jpg" alt="Group photo at Genting Highlands giant Buddha statue"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 03</span>
+        <h3>Genting Highlands</h3>
+        <p>From campus to the hills — the cohort headed up to Genting Highlands, pausing at the giant Buddha statue at the base of the limestone cliffs for a full-group photo, with the cool highland mist standing in stark contrast to Kuala Lumpur's heat just an hour below.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img14.jpg" alt="Batu Caves at night"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 04</span>
+        <h3>Batu Caves</h3>
+        <p>The day ended at Batu Caves after dark, beneath the towering golden statue of Lord Murugan lit up against the limestone cliff face — one of the most recognisable landmarks in Malaysia, and a quietly reflective close to a packed day of campus visits and hill roads.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="flight-divider">
+    <span class="dash"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16l8-2 7-7c1-1 2-1 2 0s0 1-1 2l-7 7-2 8-2-1-1-5-5-2-1-2 5-1z"/></svg>
+    <span class="dash"></span>
+  </div>
+
+  <!-- DAY 5 -->
+  <section class="day-section" id="day5">
+    <div class="day-header">
+      <span class="day-number">05</span>
+      <div>
+        <div class="day-label">Day Five</div>
+        <div class="day-route">MDEC → Negeri Sembilan → FMBA → Twin Towers</div>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img15.jpg" alt="MDEC boardroom briefing"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 01</span>
+        <h3>MDEC</h3>
+        <p>The final day opened at the Malaysia Digital Economy Corporation, in a boardroom session on how the country is steering its digital economy — from start-up ecosystems to national tech talent pipelines. A fitting venue for the last full day of an immersion built around technology and policy.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img17.jpg" alt="Meeting with State Tourism Minister of Negeri Sembilan"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 02</span>
+        <h3>Visiting the State Tourist Minister of Negeri Sembilan</h3>
+        <p>A formal courtesy visit followed with the State Tourism Minister of Negeri Sembilan, discussing tourism, education exchange, and what continued collaboration between the state and visiting institutions like JNN could look like going forward.</p>
+      </div>
+    </div>
+
+    <div class="dest-row reveal">
+      <div class="dest-photo-frame"><img src="img16.jpg" alt="FMBA roundtable meeting"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 03</span>
+        <h3>FMBA</h3>
+        <p>The programme continued with a roundtable at FMBA, sitting down with industry representatives for a closer, smaller-group conversation — a contrast to the larger institutional briefings earlier in the week, and a good chance to ask more direct questions.</p>
+      </div>
+    </div>
+
+    <div class="dest-row flip reveal">
+      <div class="dest-photo-frame"><img src="img18.jpg" alt="Petronas Twin Towers at night"></div>
+      <div class="dest-text">
+        <span class="dest-index">Stop 04</span>
+        <h3>Twin Towers</h3>
+        <p>Five days closed the way Kuala Lumpur is best known — standing beneath the Petronas Twin Towers lit up against the night sky. A fitting full stop on a programme that moved through government offices, universities, industry boardrooms, and a fair share of Malaysia's most iconic skyline along the way.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="end-section">
+    <div class="end-card reveal">
+      <h2>Five days, five themes — government, technology, education, industry, and culture.</h2>
+      <p>The JNN International Immersion Programme 2026 covered a lot of ground — literally and otherwise. From Putrajaya's government quarter to Genting's hill temples, the week stitched together formal institutional briefings with the kind of on-the-ground cultural exposure that's hard to get any other way.</p>
+      <a href="index.html#exposure" class="btn btn-ghost">← Back to portfolio</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span>JNN GROUP OF INSTITUTIONS · INTERNATIONAL IMMERSION PROGRAMME 2026</span>
+  <span>KUALA LUMPUR, MALAYSIA</span>
+</footer>
+
+<script>
+  // live particle-network background — same theme across all pages
+  (function(){
+    const canvas = document.getElementById('bgcanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const colors = ['74,222,128','255,107,74','139,150,168'];
+    let w, h, particles = [], rafId = null;
+
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    function makeParticles(){
+      const count = Math.min(75, Math.max(26, Math.floor((w*h)/24000)));
+      particles = Array.from({length:count}, ()=>({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.28,
+        vy: (Math.random()-0.5)*0.28,
+        r: Math.random()*1.5+0.7,
+        c: colors[Math.floor(Math.random()*colors.length)]
+      }));
+    }
+    function frame(){
+      ctx.clearRect(0,0,w,h);
+      const linkDist = Math.min(150, w/7);
+      for(let i=0;i<particles.length;i++){
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0 || p.x > w) p.vx *= -1;
+        if(p.y < 0 || p.y > h) p.vy *= -1;
+      }
+      for(let i=0;i<particles.length;i++){
+        const p = particles[i];
+        for(let j=i+1;j<particles.length;j++){
+          const q = particles[j];
+          const dx = p.x-q.x, dy = p.y-q.y;
+          const dist = Math.sqrt(dx*dx+dy*dy);
+          if(dist < linkDist){
+            ctx.strokeStyle = `rgba(${p.c},${(1-dist/linkDist)*0.16})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x,p.y);
+            ctx.lineTo(q.x,q.y);
+            ctx.stroke();
+          }
+        }
+      }
+      for(const p of particles){
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${p.c},0.6)`;
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
+      if(!reduced) rafId = requestAnimationFrame(frame);
+    }
+    function start(){
+      resize();
+      makeParticles();
+      if(rafId) cancelAnimationFrame(rafId);
+      if(!reduced){ rafId = requestAnimationFrame(frame); } else { frame(); }
+    }
+    let resizeTimer;
+    window.addEventListener('resize', ()=>{
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(start, 200);
+    });
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){ if(rafId) cancelAnimationFrame(rafId); }
+      else if(!reduced){ rafId = requestAnimationFrame(frame); }
+    });
+    start();
+  })();
+</script>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  window.addEventListener('pointermove', (e)=>{
+    document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+    document.documentElement.style.setProperty('--my', e.clientY + 'px');
+  }, {passive:true});
+</script>
+
+</body>
+</html>

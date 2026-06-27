@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCIE — Project 77 · Cloud Force</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0F0D;
+    --surface:#111712;
+    --card:#161D17;
+    --paper:#F2F0E6;
+    --paper-dim:#C9C6B8;
+    --trace:#4ADE80;
+    --trace-dim:#2B6B43;
+    --alert:#FF6B4A;
+    --steel:#8B96A8;
+    --gold:#FFD166;
+    --hair: rgba(242,240,230,0.12);
+    --hair-strong: rgba(242,240,230,0.22);
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* tech background: grid + circuit nodes + glow */
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background-image: radial-gradient(circle, rgba(242,240,230,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events:none;
+    z-index:0;
+  }
+  body::after{
+    content:'';
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.55;
+    background-image:
+      linear-gradient(rgba(74,222,128,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,222,128,0.06) 1px, transparent 1px),
+      radial-gradient(circle at 12% 8%, rgba(74,222,128,0.10), transparent 35%),
+      radial-gradient(circle at 90% 85%, rgba(255,107,74,0.07), transparent 40%);
+    background-size: 110px 110px, 110px 110px, auto, auto;
+    mask-image: linear-gradient(to bottom, transparent, rgba(0,0,0,0.9) 6%, rgba(0,0,0,0.9) 94%, transparent);
+  }
+  /* slow drifting ambient glow — the "live wallpaper" layer */
+  .ambient-blobs{
+    position:fixed; inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:0.4;
+    will-change:transform;
+  }
+  .blob1{
+    width:46vw; height:46vw; max-width:560px; max-height:560px;
+    background:radial-gradient(circle, rgba(74,222,128,0.55), transparent 70%);
+    top:-12%; left:-12%;
+    animation: drift1 34s ease-in-out infinite alternate;
+  }
+  .blob2{
+    width:38vw; height:38vw; max-width:480px; max-height:480px;
+    background:radial-gradient(circle, rgba(255,107,74,0.45), transparent 70%);
+    bottom:-14%; right:-10%;
+    animation: drift2 42s ease-in-out infinite alternate;
+  }
+  .blob3{
+    width:32vw; height:32vw; max-width:400px; max-height:400px;
+    background:radial-gradient(circle, rgba(91,168,214,0.4), transparent 70%);
+    top:38%; left:58%;
+    animation: drift3 50s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(8vw,6vw) scale(1.18); } }
+  @keyframes drift2{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(-7vw,-5vw) scale(1.1); } }
+  @keyframes drift3{ 0%{ transform:translate(0,0) scale(1); } 100%{ transform:translate(-6vw,5vw) scale(0.88); } }
+  @media (prefers-reduced-motion: reduce){ .blob{ animation:none !important; } }
+
+  /* live animated particle-network background */
+  #bgcanvas{
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.6;
+  }
+
+  #spotlight{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(74,222,128,0.07), transparent 60%);
+  }
+  @media (max-width:860px){ #spotlight{ display:none; } }
+
+  .wrap{ position:relative; max-width:1100px; margin:0 auto; padding:0 32px; z-index:2; }
+
+  /* top bar */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 40px;
+    backdrop-filter: blur(10px);
+    background:linear-gradient(to bottom, rgba(11,15,13,0.92), rgba(11,15,13,0));
+  }
+  @media (max-width:700px){ .topbar{ padding:16px 20px; } }
+  .back-link{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em;
+    color:var(--steel); text-decoration:none;
+    display:flex; align-items:center; gap:8px;
+    transition:color 0.25s;
+  }
+  .back-link:hover{ color:var(--trace); }
+  .topbar-tag{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em;
+    color:var(--trace); text-transform:uppercase;
+    border:1px solid var(--trace-dim); padding:5px 12px;
+  }
+
+  /* hero */
+  .phero{
+    min-height:78vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:140px 0 60px;
+    position:relative; z-index:2;
+  }
+  .phero-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--trace); display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .phero-eyebrow::before{ content:''; width:6px; height:6px; background:var(--trace); display:inline-block; }
+  .signature-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--mono); font-size:12px; letter-spacing:0.05em;
+    color:var(--gold); border:1px solid rgba(255,209,102,0.4); background:rgba(255,209,102,0.08);
+    padding:5px 12px; margin-bottom:20px;
+  }
+  h1.phero-title{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(36px,6.4vw,68px); line-height:1.04; letter-spacing:-0.01em;
+    max-width:18ch;
+  }
+  h1.phero-title .accent{ color:var(--trace); }
+  .phero-sub{
+    font-family:var(--body); font-size:clamp(16px,1.8vw,19px); color:var(--paper-dim);
+    max-width:62ch; margin-top:26px; line-height:1.65;
+  }
+
+  /* Cloud Force team-name banner */
+  .team-banner{
+    margin-top:48px;
+    display:flex; align-items:baseline; gap:18px; flex-wrap:wrap;
+  }
+  .team-banner-label{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--steel);
+  }
+  .team-banner-name{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(40px,7vw,84px);
+    letter-spacing:-0.02em;
+    line-height:0.9;
+    background:linear-gradient(100deg, var(--paper) 30%, var(--trace) 75%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+  }
+
+  .meta-strip{
+    display:flex; gap:44px; flex-wrap:wrap; margin-top:54px;
+  }
+  .meta-strip dt{ font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--steel); margin-bottom:6px; }
+  .meta-strip dd{ font-family:var(--display); font-size:19px; font-weight:600; color:var(--paper); }
+
+  /* section base */
+  section{ position:relative; padding:70px 0; z-index:2; border-top:1px solid var(--hair); }
+  .section-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--trace); display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .section-eyebrow::before{ content:''; width:6px; height:6px; background:var(--trace); display:inline-block; }
+  h2.s-title{
+    font-family:var(--display); font-size:clamp(26px,3.6vw,38px); font-weight:700; color:var(--paper);
+    margin-bottom:18px; letter-spacing:-0.01em;
+  }
+  .lede{ font-family:var(--body); font-size:16.5px; color:var(--paper-dim); max-width:68ch; line-height:1.75; margin-bottom:20px; }
+  .lede b{ color:var(--paper); font-weight:600; }
+
+  /* vision card */
+  .vision-card{
+    border:1px solid var(--hair-strong); background:var(--card);
+    padding:36px; margin-top:8px;
+  }
+  @media (max-width:700px){ .vision-card{ padding:26px; } }
+  .vision-card p{ font-size:16px; line-height:1.75; color:var(--paper-dim); }
+
+  /* collab grid */
+  .collab-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:1px; background:var(--hair); border:1px solid var(--hair-strong); margin-top:8px; }
+  @media (max-width:700px){ .collab-grid{ grid-template-columns:1fr; } }
+  .collab-item{ background:var(--ink); padding:18px 22px; font-size:14.5px; color:var(--paper-dim); display:flex; gap:12px; align-items:flex-start; }
+  .collab-item::before{ content:'▸'; color:var(--trace); font-family:var(--mono); flex-shrink:0; }
+
+  /* workflow steps */
+  .flow-list{ margin-top:8px; counter-reset:flow; }
+  .flow-item{
+    display:grid; grid-template-columns:56px 1fr; gap:20px;
+    padding:22px 0; border-bottom:1px solid var(--hair);
+  }
+  .flow-item:first-child{ border-top:1px solid var(--hair); }
+  .flow-num{ font-family:var(--mono); font-size:13px; color:var(--trace); padding-top:2px; }
+  .flow-text{ font-size:15.5px; color:var(--paper-dim); line-height:1.6; padding-top:1px; }
+
+  /* skills gained */
+  .gained-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; margin-top:8px; }
+  .gained-pill{
+    font-family:var(--body); font-size:14.5px; font-weight:500; color:var(--paper);
+    border:1px solid var(--hair-strong); background:var(--card); padding:14px 18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .gained-pill::before{ content:'◆'; color:var(--trace); font-size:10px; }
+
+  /* team section */
+  .team-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top:8px;
+  }
+  @media (max-width:760px){ .team-grid{ grid-template-columns:1fr; } }
+  .team-photo{
+    position:relative; border:1px solid var(--hair-strong); overflow:hidden; background:var(--surface);
+    aspect-ratio: 4/3;
+    border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .team-photo img{ max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; display:block; filter:saturate(1.02) contrast(1.02); transition:transform 0.5s ease; }
+  .team-photo:hover img{ transform:scale(1.04); }
+  .team-photo .cap{
+    position:absolute; bottom:0; left:0; right:0;
+    padding:14px 16px;
+    background:linear-gradient(to top, rgba(11,15,13,0.92), transparent);
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.05em; color:var(--paper);
+  }
+  .team-photo .cap span{ color:var(--trace); }
+
+  /* impact card */
+  .impact-card{
+    border-left:2px solid var(--trace-dim); padding:6px 0 6px 24px; margin-top:8px;
+  }
+
+  /* CTA / footer */
+  .end-section{ text-align:left; padding-bottom:100px; }
+  .end-card{
+    border:1px solid var(--hair-strong); background:var(--card); padding:56px;
+    position:relative; overflow:hidden;
+  }
+  @media (max-width:700px){ .end-card{ padding:32px 24px; } }
+  .end-card h2{ font-family:var(--display); font-size:clamp(26px,4vw,40px); font-weight:700; margin-bottom:16px; max-width:22ch; }
+  .end-card p{ color:var(--paper-dim); font-size:15.5px; max-width:60ch; line-height:1.65; margin-bottom:30px; }
+  .end-links{ display:flex; gap:16px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.04em; padding:15px 28px;
+    text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    transition:all 0.25s; border:1px solid var(--hair-strong);
+  }
+  .btn-primary{ background:var(--trace); color:var(--ink); border-color:var(--trace); font-weight:600; }
+  .btn-primary:hover{ background:#67e895; transform:translateY(-2px); }
+  .btn-ghost{ color:var(--paper); background:transparent; }
+  .btn-ghost:hover{ border-color:var(--trace); color:var(--trace); }
+
+  footer{
+    padding:32px 32px; border-top:1px solid var(--hair); font-family:var(--mono); font-size:11.5px;
+    color:var(--steel); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    position:relative; z-index:2; max-width:1100px; margin:0 auto;
+  }
+
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } .reveal{ opacity:1; transform:none; } }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--trace); outline-offset:3px; }
+</style>
+</head>
+<body>
+
+<div class="ambient-blobs">
+  <span class="blob blob1"></span>
+  <span class="blob blob2"></span>
+  <span class="blob blob3"></span>
+</div>
+
+<canvas id="bgcanvas"></canvas>
+
+<div id="spotlight"></div>
+
+<div class="topbar">
+  <a href="index.html#projects" class="back-link">← Back to portfolio</a>
+  <span class="topbar-tag">Project file · 77</span>
+</div>
+
+<div class="wrap">
+
+  <section class="phero" style="border-top:none;">
+    <div class="phero-eyebrow">Civic Tech / Cloud — 15+ AWS Services</div>
+    <span class="signature-pill">★ Signature Project</span>
+    <h1 class="phero-title">NCIE <span class="accent">—</span> National Civic Intelligence Engine</h1>
+    <p class="phero-sub">A collaborative software innovation by a team of four — built to simplify user interactions, automate grievance triage, and resolve citizen complaints through a self-training, AWS-native system.</p>
+
+    <div class="team-banner">
+      <span class="team-banner-label">Built by</span>
+      <span class="team-banner-name">Cloud Force</span>
+    </div>
+
+    <dl class="meta-strip">
+      <div class="meta-item"><dt>Team size</dt><dd>4 members</dd></div>
+      <div class="meta-item"><dt>Stack</dt><dd>AWS · Self-training AI</dd></div>
+      <div class="meta-item"><dt>Type</dt><dd>Civic grievance engine</dd></div>
+    </dl>
+  </section>
+
+  <section id="vision">
+    <div class="section-eyebrow">01 / Vision</div>
+    <h2 class="s-title">Project Vision</h2>
+    <div class="vision-card reveal">
+      <p>The primary objective of Project 77 was to design and develop a reliable platform that simplifies user interactions, automates essential processes, and provides an intuitive experience through a well-organized interface. The project emphasizes <b style="color:var(--paper)">usability, performance, and maintainability</b>, ensuring it can evolve with future requirements. Rather than treating the build as a collection of features, the team focused on a solution that addresses real-world needs while staying scalable and efficient — moving through structured requirement analysis, system design, development, testing, and deployment.</p>
+    </div>
+  </section>
+
+  <section id="collaboration">
+    <div class="section-eyebrow">02 / Team Collaboration</div>
+    <h2 class="s-title">Working as Cloud Force</h2>
+    <p class="lede">One of the most rewarding aspects of Project 77 was working within a team environment. Our four-member team divided responsibilities based on individual strengths while maintaining continuous communication throughout the project lifecycle — simulating a real-world software development environment where teamwork, communication, and version control played a crucial role.</p>
+    <div class="collab-grid">
+      <div class="collab-item reveal">Requirement gathering and brainstorming sessions</div>
+      <div class="collab-item reveal">UI/UX design discussions</div>
+      <div class="collab-item reveal">Feature development and integration</div>
+      <div class="collab-item reveal">Code reviews and debugging</div>
+      <div class="collab-item reveal">Testing and quality assurance</div>
+      <div class="collab-item reveal">Project documentation and presentation</div>
+    </div>
+  </section>
+
+  <section id="approach">
+    <div class="section-eyebrow">03 / Development Approach</div>
+    <h2 class="s-title">How we built it</h2>
+    <p class="lede">The project was developed using a <b>modular architecture</b>, allowing different components to be built independently and later integrated into a unified system — improving maintainability, simplifying debugging, and enabling smoother collaboration among team members.</p>
+    <div class="flow-list reveal">
+      <div class="flow-item"><span class="flow-num">01</span><span class="flow-text">Identifying the problem statement and user requirements.</span></div>
+      <div class="flow-item"><span class="flow-num">02</span><span class="flow-text">Designing the system architecture and workflow.</span></div>
+      <div class="flow-item"><span class="flow-num">03</span><span class="flow-text">Implementing frontend and backend functionalities.</span></div>
+      <div class="flow-item"><span class="flow-num">04</span><span class="flow-text">Integrating databases and application logic.</span></div>
+      <div class="flow-item"><span class="flow-num">05</span><span class="flow-text">Conducting testing and performance validation.</span></div>
+      <div class="flow-item"><span class="flow-num">06</span><span class="flow-text">Refining the final product based on feedback.</span></div>
+    </div>
+  </section>
+
+  <section id="contribution">
+    <div class="section-eyebrow">04 / My Contribution</div>
+    <h2 class="s-title">My role on the team</h2>
+    <p class="lede">As one of the four core team members, I actively contributed to the project's development by participating in planning, implementation, testing, and coordination activities — collaborating closely with my teammates to ensure smooth integration of features and consistent project progress.</p>
+    <div class="gained-grid reveal">
+      <div class="gained-pill">Software development &amp; problem-solving</div>
+      <div class="gained-pill">Team collaboration &amp; communication</div>
+      <div class="gained-pill">Git &amp; GitHub version control</div>
+      <div class="gained-pill">Debugging &amp; testing</div>
+      <div class="gained-pill">System design &amp; implementation</div>
+      <div class="gained-pill">Project presentation &amp; documentation</div>
+    </div>
+  </section>
+
+  <section id="challenges">
+    <div class="section-eyebrow">05 / Challenges &amp; Learning</div>
+    <h2 class="s-title">What it took to ship</h2>
+    <div class="impact-card reveal">
+      <p class="lede" style="margin-bottom:0;">Like any real-world project, Project 77 presented several technical and collaborative challenges. Coordinating development efforts among multiple contributors, managing code integration, resolving bugs, and ensuring feature compatibility required continuous teamwork and adaptability — and taught the value of clear communication, careful planning, and iterative improvement.</p>
+    </div>
+  </section>
+
+  <section id="team">
+    <div class="section-eyebrow">06 / The Team</div>
+    <h2 class="s-title">Cloud Force, in the field</h2>
+    <p class="lede">Four contributors, one build. Here's the team at AI Ascend 2026, where Project 77's approach to AI-driven civic systems took shape.</p>
+    <div class="team-grid">
+      <div class="team-photo reveal">
+        <img src="team1.jpeg" alt="Cloud Force team members at AI Ascend 2026">
+        <div class="cap"><span>Cloud Force</span> — full team at AI Ascend 2026</div>
+      </div>
+      <div class="team-photo reveal">
+        <img src="team2.jpeg" alt="Cloud Force team member with AI Ascend 2026 participant badge">
+        <div class="cap">On-site — AI Ascend 2026, Innovating for India's Tomorrow</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="impact">
+    <div class="section-eyebrow">07 / Impact &amp; Future Scope</div>
+    <h2 class="s-title">Where this goes next</h2>
+    <p class="lede">Project 77 reflects the team's dedication, creativity, and technical capability. While it successfully meets its current objectives, it also lays a strong foundation for future enhancements — advanced automation, improved scalability, additional features, and full cloud-based deployment.</p>
+  </section>
+
+  <section class="end-section">
+    <div class="section-eyebrow">08 / Source</div>
+    <div class="end-card reveal">
+      <h2>More than a build — a full development lifecycle, end to end.</h2>
+      <p>Project 77 is more than a technical achievement: it's proof of working effectively within a team, contributing to complex software solutions, and adapting to real-world development challenges alongside three other Cloud Force teammates.</p>
+      <div class="end-links">
+        <a href="https://github.com/SSDV19/Project-77" target="_blank" rel="noopener" class="btn btn-primary">View on GitHub →</a>
+        <a href="index.html#projects" class="btn btn-ghost">← Back to portfolio</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <span>PROJECT 77 — NCIE · BUILT BY CLOUD FORCE</span>
+  <span>CHENNAI, TAMIL NADU, INDIA</span>
+</footer>
+
+<script>
+  // live particle-network background — same theme across all pages
+  (function(){
+    const canvas = document.getElementById('bgcanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const colors = ['74,222,128','255,107,74','139,150,168'];
+    let w, h, particles = [], rafId = null;
+
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    function makeParticles(){
+      const count = Math.min(75, Math.max(26, Math.floor((w*h)/24000)));
+      particles = Array.from({length:count}, ()=>({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        vx: (Math.random()-0.5)*0.28,
+        vy: (Math.random()-0.5)*0.28,
+        r: Math.random()*1.5+0.7,
+        c: colors[Math.floor(Math.random()*colors.length)]
+      }));
+    }
+    function frame(){
+      ctx.clearRect(0,0,w,h);
+      const linkDist = Math.min(150, w/7);
+      for(let i=0;i<particles.length;i++){
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0 || p.x > w) p.vx *= -1;
+        if(p.y < 0 || p.y > h) p.vy *= -1;
+      }
+      for(let i=0;i<particles.length;i++){
+        const p = particles[i];
+        for(let j=i+1;j<particles.length;j++){
+          const q = particles[j];
+          const dx = p.x-q.x, dy = p.y-q.y;
+          const dist = Math.sqrt(dx*dx+dy*dy);
+          if(dist < linkDist){
+            ctx.strokeStyle = `rgba(${p.c},${(1-dist/linkDist)*0.16})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p.x,p.y);
+            ctx.lineTo(q.x,q.y);
+            ctx.stroke();
+          }
+        }
+      }
+      for(const p of particles){
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${p.c},0.6)`;
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
+      if(!reduced) rafId = requestAnimationFrame(frame);
+    }
+    function start(){
+      resize();
+      makeParticles();
+      if(rafId) cancelAnimationFrame(rafId);
+      if(!reduced){ rafId = requestAnimationFrame(frame); } else { frame(); }
+    }
+    let resizeTimer;
+    window.addEventListener('resize', ()=>{
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(start, 200);
+    });
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){ if(rafId) cancelAnimationFrame(rafId); }
+      else if(!reduced){ rafId = requestAnimationFrame(frame); }
+    });
+    start();
+  })();
+</script>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.12});
+  revealEls.forEach(el=>io.observe(el));
+
+  window.addEventListener('pointermove', (e)=>{
+    document.documentElement.style.setProperty('--mx', e.clientX + 'px');
+    document.documentElement.style.setProperty('--my', e.clientY + 'px');
+  }, {passive:true});
+</script>
+
+</body>
+</html>
