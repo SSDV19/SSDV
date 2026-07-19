@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>International Exposure · Sri Sai Darshan Vel V</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#060C18;
+    --surface:#0A1228;
+    --card:#0F1A35;
+    --card2:#132040;
+    --paper:#F0F4FF;
+    --paper-dim:#A8B8D8;
+    --sky:#5BA8D6;
+    --sky-dim:#2E5F8A;
+    --sky-bright:#7CC4F0;
+    --horizon:#C4E4F8;
+    --trace:#4ADE80;
+    --trace-dim:#2B6B43;
+    --gold:#FFD166;
+    --hair:rgba(91,168,214,0.14);
+    --hair-strong:rgba(91,168,214,0.26);
+    --display:'Space Grotesk',sans-serif;
+    --body:'IBM Plex Sans',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--body);
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+  }
+
+  /* ============================================
+     ANIMATED SKY BACKGROUND
+     ============================================ */
+  #sky-canvas{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+  }
+
+  /* drifting cloud layers */
+  .clouds{
+    position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden;
+  }
+  .cloud{
+    position:absolute;
+    border-radius:50px;
+    background:rgba(255,255,255,0.07);
+    filter:blur(18px);
+    will-change:transform;
+  }
+  .cloud::before, .cloud::after{
+    content:'';
+    position:absolute;
+    border-radius:50%;
+    background:inherit;
+  }
+  /* cloud 1 — large, slow */
+  .c1{
+    width:380px; height:80px; top:14%; left:-420px;
+    animation: cloudDrift1 90s linear infinite;
+  }
+  .c1::before{ width:160px; height:100px; top:-55px; left:60px; }
+  .c1::after{ width:120px; height:80px; top:-40px; left:180px; }
+  /* cloud 2 — medium */
+  .c2{
+    width:260px; height:60px; top:28%; left:-300px;
+    animation: cloudDrift2 70s linear infinite;
+    animation-delay:-20s;
+  }
+  .c2::before{ width:110px; height:80px; top:-44px; left:40px; }
+  .c2::after{ width:90px; height:65px; top:-32px; left:130px; }
+  /* cloud 3 — small fast */
+  .c3{
+    width:200px; height:50px; top:8%; left:-240px;
+    animation: cloudDrift1 55s linear infinite;
+    animation-delay:-35s;
+    opacity:0.6;
+  }
+  .c3::before{ width:90px; height:65px; top:-36px; left:30px; }
+  /* cloud 4 */
+  .c4{
+    width:300px; height:65px; top:42%; left:-340px;
+    animation: cloudDrift2 80s linear infinite;
+    animation-delay:-48s;
+    opacity:0.5;
+  }
+  .c4::before{ width:130px; height:90px; top:-50px; left:50px; }
+  .c4::after{ width:100px; height:70px; top:-35px; left:160px; }
+  /* cloud 5 */
+  .c5{
+    width:240px; height:55px; top:20%; left:-280px;
+    animation: cloudDrift1 65s linear infinite;
+    animation-delay:-10s;
+    opacity:0.55;
+  }
+  .c5::before{ width:100px; height:70px; top:-40px; left:45px; }
+
+  @keyframes cloudDrift1{
+    0%  { transform:translateX(0); }
+    100%{ transform:translateX(calc(100vw + 500px)); }
+  }
+  @keyframes cloudDrift2{
+    0%  { transform:translateX(0); }
+    100%{ transform:translateX(calc(100vw + 420px)); }
+  }
+
+  /* airplane that gently swings across sky */
+  .plane-wrap{
+    position:fixed;
+    top:7%;
+    left:-220px;
+    z-index:2;
+    pointer-events:none;
+    animation: flyAcross 38s ease-in-out infinite;
+    animation-delay:-6s;
+  }
+  .plane-wrap svg{
+    width:180px; height:auto;
+    animation: planeTilt 8s ease-in-out infinite;
+  }
+  @keyframes flyAcross{
+    0%  { transform:translateX(0); }
+    100%{ transform:translateX(calc(100vw + 260px)); }
+  }
+  @keyframes planeTilt{
+    0%,100%{ transform:rotate(-2deg) translateY(0px); }
+    50%    { transform:rotate(2deg) translateY(-12px); }
+  }
+
+  /* contrail behind the plane */
+  .contrail{
+    position:fixed;
+    top:calc(7% + 28px);
+    left:0;
+    right:0;
+    height:2px;
+    z-index:1;
+    pointer-events:none;
+    background:linear-gradient(to right, transparent 0%, rgba(255,255,255,0.18) 30%, rgba(255,255,255,0.06) 80%, transparent 100%);
+    animation: contrailFade 38s ease-in-out infinite;
+    animation-delay:-6s;
+    opacity:0;
+  }
+  @keyframes contrailFade{
+    0%{ opacity:0; } 8%{ opacity:1; } 85%{ opacity:0.5; } 100%{ opacity:0; }
+  }
+
+  /* ambient sky glow blobs */
+  .sky-blobs{
+    position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  }
+  .sblob{
+    position:absolute; border-radius:50%; filter:blur(80px); will-change:transform;
+  }
+  .sblob1{
+    width:50vw; height:50vw; max-width:640px; max-height:640px;
+    background:radial-gradient(circle, rgba(91,168,214,0.22), transparent 70%);
+    top:-18%; left:-14%;
+    animation:sbDrift1 44s ease-in-out infinite alternate;
+  }
+  .sblob2{
+    width:40vw; height:40vw; max-width:520px; max-height:520px;
+    background:radial-gradient(circle, rgba(30,80,160,0.28), transparent 70%);
+    bottom:-18%; right:-12%;
+    animation:sbDrift2 56s ease-in-out infinite alternate;
+  }
+  .sblob3{
+    width:36vw; height:36vw; max-width:440px; max-height:440px;
+    background:radial-gradient(circle, rgba(124,196,240,0.14), transparent 70%);
+    top:40%; left:44%;
+    animation:sbDrift3 62s ease-in-out infinite alternate;
+  }
+  @keyframes sbDrift1{ 0%{transform:translate(0,0);} 100%{transform:translate(6vw,5vw);} }
+  @keyframes sbDrift2{ 0%{transform:translate(0,0);} 100%{transform:translate(-5vw,-4vw);} }
+  @keyframes sbDrift3{ 0%{transform:translate(0,0);} 100%{transform:translate(-4vw,4vw);} }
+
+  /* dot grid */
+  body::before{
+    content:''; position:fixed; inset:0;
+    background-image:radial-gradient(circle, rgba(91,168,214,0.08) 1px, transparent 1px);
+    background-size:28px 28px;
+    pointer-events:none; z-index:0;
+  }
+
+  /* cursor glow */
+  #spotlight{
+    position:fixed; inset:0; z-index:2; pointer-events:none;
+    background:radial-gradient(500px circle at var(--mx,50%) var(--my,50%), rgba(91,168,214,0.07), transparent 60%);
+  }
+  @media(max-width:860px){ #spotlight{display:none;} }
+
+  /* ============================================
+     TOPBAR
+     ============================================ */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 40px;
+    backdrop-filter:blur(12px);
+    background:linear-gradient(to bottom, rgba(6,12,24,0.88), transparent);
+  }
+  @media(max-width:700px){.topbar{padding:16px 20px;}}
+  .back-link{
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em;
+    color:var(--paper-dim); text-decoration:none; display:flex; align-items:center; gap:8px;
+    transition:color 0.25s;
+  }
+  .back-link:hover{color:var(--sky-bright);}
+  .topbar-badge{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.1em;
+    color:var(--sky); text-transform:uppercase;
+    border:1px solid var(--sky-dim); padding:5px 12px;
+  }
+
+  /* ============================================
+     HERO
+     ============================================ */
+  .wrap{position:relative; max-width:1160px; margin:0 auto; padding:0 36px; z-index:10;}
+  @media(max-width:600px){.wrap{padding:0 20px;}}
+
+  .phero{
+    min-height:52vh; display:flex; flex-direction:column; justify-content:flex-end;
+    padding:160px 0 56px; position:relative; z-index:10;
+    border-bottom:1px solid var(--hair);
+  }
+  .phero-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--sky); display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .phero-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block;}
+  .phero h1{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(42px,7vw,82px); line-height:1.02; letter-spacing:-0.015em;
+    background:linear-gradient(110deg, #F0F4FF 30%, #7CC4F0 70%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .phero-sub{
+    font-size:clamp(16px,1.8vw,20px); color:var(--paper-dim); max-width:58ch;
+    margin-top:20px; line-height:1.7;
+  }
+  .phero-sub em{ color:var(--sky-bright); font-style:normal; font-weight:600; }
+  .hero-meta{
+    display:flex; gap:48px; flex-wrap:wrap; margin-top:36px;
+  }
+  .hero-meta dt{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--sky-dim); margin-bottom:5px;}
+  .hero-meta dd{font-family:var(--display); font-size:17px; font-weight:600; color:var(--paper);}
+
+  /* ============================================
+     EVENTS GRID — easy to add new cards here
+     ============================================ */
+  .events-section{position:relative; padding:72px 0 32px; z-index:10;}
+  .events-eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--sky); display:flex; align-items:center; gap:10px; margin-bottom:48px;
+    border-bottom:1px solid var(--hair); padding-bottom:18px;
+  }
+  .events-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block;}
+
+  /* ---- SINGLE EVENT CARD ---- */
+  .event-card{
+    display:flex;
+    align-items:center;
+    gap:52px;
+    padding:56px 0;
+    border-bottom:1px solid var(--hair);
+  }
+  .event-card:last-of-type{border-bottom:none;}
+  .event-text{flex:1 1 52%; min-width:260px;}
+  .event-photo{
+    flex:0 0 auto;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .event-photo img{
+    max-width:320px;
+    max-height:400px;
+    width:auto; height:auto;
+    object-fit:contain;
+    border-radius:20px;
+    border:1px solid var(--hair-strong);
+    background:var(--card);
+    box-shadow:0 24px 60px -20px rgba(6,12,24,0.8), 0 0 0 1px rgba(91,168,214,0.12);
+  }
+  .event-num{
+    font-family:var(--mono); font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--sky-dim); margin-bottom:14px; display:block;
+  }
+  .event-flag-title{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px; flex-wrap:wrap;
+  }
+  .event-flag-title h2{
+    font-family:var(--display); font-size:clamp(30px,4.4vw,50px); font-weight:700;
+    color:var(--paper); letter-spacing:-0.01em; line-height:1.04;
+  }
+  .event-flag{font-size:clamp(28px,3.6vw,42px); line-height:1;}
+  .event-pill{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:var(--mono); font-size:12px; letter-spacing:0.04em;
+    color:var(--sky); border:1px solid var(--sky-dim); background:rgba(91,168,214,0.09);
+    padding:5px 12px; margin-bottom:16px;
+  }
+  .event-desc{
+    font-size:15.5px; color:var(--paper-dim); line-height:1.75; max-width:52ch;
+    margin-bottom:28px;
+  }
+  .event-tags{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px;}
+  .event-tag{
+    font-family:var(--mono); font-size:11px; letter-spacing:0.04em;
+    color:var(--paper-dim); border:1px solid var(--hair-strong); padding:4px 10px;
+  }
+
+  /* buttons */
+  .btn{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.04em; padding:14px 26px;
+    text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+    transition:all 0.25s; border:1px solid var(--hair-strong);
+  }
+  .btn-sky{background:var(--sky); color:var(--ink); border-color:var(--sky); font-weight:600;}
+  .btn-sky:hover{background:var(--sky-bright); transform:translateY(-2px); box-shadow:0 8px 24px -8px rgba(91,168,214,0.45);}
+  .btn-ghost{color:var(--paper); background:transparent; border-color:var(--hair-strong);}
+  .btn-ghost:hover{border-color:var(--sky); color:var(--sky-bright);}
+
+  @media(max-width:800px){
+    .event-card{flex-direction:column; gap:30px; align-items:flex-start;}
+    .event-photo{width:100%;}
+    .event-photo img{max-width:100%; max-height:300px;}
+  }
+
+  /* ============================================
+     MORE EVENTS PLACEHOLDER
+     (add more .event-card blocks above this footer note)
+     ============================================ */
+  .more-soon{
+    padding:56px 0 100px;
+    text-align:center;
+    z-index:10; position:relative;
+  }
+  .more-soon-inner{
+    border:1px dashed var(--hair-strong);
+    padding:40px;
+    display:inline-block;
+    min-width:320px;
+  }
+  .more-soon-inner p{
+    font-family:var(--mono); font-size:13px; letter-spacing:0.06em;
+    color:var(--sky-dim); text-transform:uppercase;
+  }
+  .more-soon-inner span{ font-size:28px; display:block; margin-bottom:12px; }
+
+  footer{
+    padding:28px 36px; border-top:1px solid var(--hair);
+    font-family:var(--mono); font-size:11.5px; color:var(--sky-dim);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    position:relative; z-index:10; max-width:1160px; margin:0 auto;
+  }
+
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity 0.75s ease, transform 0.75s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important;}
+    .reveal{opacity:1; transform:none;}
+    .plane-wrap, .contrail, .clouds *{animation:none !important;}
+  }
+  a:focus-visible, button:focus-visible{outline:2px solid var(--sky); outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<!-- sky glow blobs -->
+<div class="sky-blobs">
+  <span class="sblob sblob1"></span>
+  <span class="sblob sblob2"></span>
+  <span class="sblob sblob3"></span>
+</div>
+
+<!-- drifting clouds -->
+<div class="clouds">
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="cloud c4"></div>
+  <div class="cloud c5"></div>
+</div>
+
+<!-- contrail line -->
+<div class="contrail"></div>
+
+<!-- animated plane -->
+<div class="plane-wrap">
+  <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <!-- fuselage -->
+    <ellipse cx="100" cy="40" rx="78" ry="12" fill="rgba(220,235,255,0.92)"/>
+    <!-- nose -->
+    <path d="M178 40 C192 40 200 37 200 40 C200 43 192 40 178 40Z" fill="rgba(200,220,255,0.85)"/>
+    <!-- main wings -->
+    <path d="M95 38 L140 8 L148 14 L110 42Z" fill="rgba(180,210,255,0.88)"/>
+    <path d="M95 42 L140 72 L148 66 L110 38Z" fill="rgba(180,210,255,0.88)"/>
+    <!-- tail fin vertical -->
+    <path d="M28 40 L22 18 L34 22 L32 40Z" fill="rgba(160,200,255,0.8)"/>
+    <!-- tail fins horizontal -->
+    <path d="M30 40 L50 28 L54 32 L38 42Z" fill="rgba(160,200,255,0.75)"/>
+    <path d="M30 40 L50 52 L54 48 L38 38Z" fill="rgba(160,200,255,0.75)"/>
+    <!-- windows -->
+    <ellipse cx="130" cy="38" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="118" cy="37" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="106" cy="37" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="94" cy="37" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="82" cy="38" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="70" cy="38" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+    <ellipse cx="58" cy="38" rx="3.5" ry="2.8" fill="rgba(91,168,214,0.7)"/>
+  </svg>
+</div>
+
+<!-- cursor spotlight -->
+<div id="spotlight"></div>
+
+<!-- topbar -->
+<div class="topbar">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <span class="topbar-badge">International Exposure</span>
+</div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="phero">
+    <div class="phero-eyebrow">Expanding the horizon · Beyond the classroom</div>
+    <h1>Exploring beyond<br>the boundaries.</h1>
+    <p class="phero-sub">Every trip, workshop, and cross-border visit adds a layer of perspective that no textbook can. Here's where I've been, who I've met, and what it built.</p>
+    <dl class="hero-meta">
+      <div><dt>Countries visited</dt><dd>Malaysia 🇲🇾</dd></div>
+      <div><dt>Programs</dt><dd>1 &amp; counting</dd></div>
+      <div><dt>Next destination</dt><dd>TBA ✈️</dd></div>
+    </dl>
+  </section>
+
+  <!-- EVENTS SECTION
+       ┌──────────────────────────────────────────────────┐
+       │  TO ADD A NEW EVENT IN THE FUTURE:              │
+       │  Copy one .event-card block below,              │
+       │  update the text, image src, and link,          │
+       │  and paste it above the .more-soon div.         │
+       └──────────────────────────────────────────────────┘
+  -->
+  <section class="events-section">
+    <div class="events-eyebrow">Programmes &amp; Visits</div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- EVENT 01 — MALAYSIA IMMERSION PROGRAMME 2026   -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="event-card reveal">
+      <div class="event-text">
+        <span class="event-num">Event 01 · 2026</span>
+        <div class="event-flag-title">
+          <h2>Malaysia</h2>
+          <span class="event-flag">🇲🇾</span>
+        </div>
+        <span class="event-pill">JNN Group of Institutions · International Immersion Programme</span>
+        <p class="event-desc">5 days. Kuala Lumpur, Putrajaya, Cyberjaya, Genting Highlands. Government institutions, a Power BI workshop at the University of Cyberjaya, a university MoU signing at INTI, industry briefings at MDEC, a visit with the State Tourism Minister of Negeri Sembilan, and cultural landmarks from Batu Caves to the Twin Towers.</p>
+        <div class="event-tags">
+          <span class="event-tag">Government &amp; Policy</span>
+          <span class="event-tag">Industry Briefings</span>
+          <span class="event-tag">University Visit</span>
+          <span class="event-tag">Cultural Immersion</span>
+          <span class="event-tag">MDEC</span>
+          <span class="event-tag">MoU Signing</span>
+        </div>
+        <a href="malaysia.html" class="btn btn-sky">See full itinerary →</a>
+      </div>
+      <div class="event-photo">
+        <img src="img19.jpg" alt="Sri Sai Darshan Vel V arriving at the tarmac in Malaysia">
+      </div>
+    </div>
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- ADD NEW EVENTS ABOVE THIS LINE                 -->
+    <!-- ═══════════════════════════════════════════════ -->
+
+  </section>
+
+  <!-- "More coming" placeholder — remove once you have Event 02 -->
+  <div class="more-soon reveal">
+    <div class="more-soon-inner">
+      <span>✈️</span>
+      <p>More destinations · Coming soon</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>INTERNATIONAL EXPOSURE · SRI SAI DARSHAN VEL V</span>
+  <span>EXPANDING BEYOND THE BOUNDARIES</span>
+</footer>
+
+<script>
+  // cursor spotlight
+  window.addEventListener('pointermove', e=>{
+    document.documentElement.style.setProperty('--mx', e.clientX+'px');
+    document.documentElement.style.setProperty('--my', e.clientY+'px');
+  }, {passive:true});
+
+  // scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+  }, {threshold:0.12});
+  reveals.forEach(el=>io.observe(el));
+
+  // star canvas — faint stars behind everything
+  const canvas = document.createElement('canvas');
+  canvas.id = 'sky-canvas';
+  document.body.prepend(canvas);
+  const ctx = canvas.getContext('2d');
+  function resizeCanvas(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas, {passive:true});
+  const stars = Array.from({length:120}, ()=>({
+    x:Math.random(), y:Math.random(),
+    r:Math.random()*1.2+0.3,
+    a:Math.random(),
+    speed:Math.random()*0.003+0.001
+  }));
+  let time=0;
+  function drawStars(){
+    const w=canvas.width, h=canvas.height;
+    ctx.clearRect(0,0,w,h);
+    time += 0.01;
+    for(const s of stars){
+      const pulse = s.a * (0.65 + 0.35*Math.sin(time*s.speed*60+s.x*100));
+      ctx.beginPath();
+      ctx.arc(s.x*w, s.y*h, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(180,210,255,${pulse})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){ drawStars(); }
+  else { drawStars(); cancelAnimationFrame(drawStars); }
+</script>
+
+</body>
+</html>
