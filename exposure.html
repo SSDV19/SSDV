@@ -371,6 +371,79 @@
     .plane-wrap, .contrail, .clouds *{animation:none !important;}
   }
   a:focus-visible, button:focus-visible{outline:2px solid var(--sky); outline-offset:3px;}
+
+  /* Audio toggle style */
+  .audio-toggle {
+    background: transparent;
+    border: 1px solid var(--hair-strong);
+    color: var(--sky-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.25s;
+    border-radius: 4px;
+  }
+  .audio-toggle:hover {
+    color: var(--sky-bright);
+    border-color: var(--sky-bright);
+    background: rgba(91, 168, 214, 0.05);
+  }
+  .audio-toggle.enabled {
+    color: var(--sky-bright);
+    border-color: var(--sky-bright);
+    background: rgba(91, 168, 214, 0.08);
+  }
+
+  /* Sonic Boom ripple */
+  @keyframes ripple-out {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(35); opacity: 0; }
+  }
+
+  /* Glitch Text styling */
+  .glitch-hover {
+    position: relative;
+    cursor: pointer;
+  }
+  .glitch-hover:hover::before,
+  .glitch-hover:hover::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--ink);
+    clip-path: rect(0 0 0 0);
+  }
+  .glitch-hover:hover::before {
+    left: 2.5px;
+    text-shadow: -1.5px 0 var(--alert);
+    animation: glitch-anim-1 1s infinite linear alternate-reverse;
+  }
+  .glitch-hover:hover::after {
+    left: -2.5px;
+    text-shadow: -1.5px 0 var(--sky-bright);
+    animation: glitch-anim-2 1s infinite linear alternate-reverse;
+  }
+  @keyframes glitch-anim-1 {
+    0% { clip-path: inset(20% 0 70% 0); }
+    20% { clip-path: inset(5% 0 85% 0); }
+    40% { clip-path: inset(60% 0 10% 0); }
+    60% { clip-path: inset(30% 0 50% 0); }
+    80% { clip-path: inset(85% 0 5% 0); }
+    100% { clip-path: inset(10% 0 75% 0); }
+  }
+  @keyframes glitch-anim-2 {
+    0% { clip-path: inset(50% 0 35% 0); }
+    20% { clip-path: inset(15% 0 75% 0); }
+    40% { clip-path: inset(5% 0 85% 0); }
+    60% { clip-path: inset(70% 0 15% 0); }
+    80% { clip-path: inset(35% 0 45% 0); }
+    100% { clip-path: inset(65% 0 20% 0); }
+  }
 </style>
 </head>
 <body>
@@ -395,7 +468,7 @@
 <div class="contrail"></div>
 
 <!-- animated plane -->
-<div class="plane-wrap">
+<div class="plane-wrap" style="cursor:pointer;" onclick="triggerPlaneBoost()" title="Click to trigger dynamic sonic boost!">
   <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg" fill="none">
     <!-- fuselage -->
     <ellipse cx="100" cy="40" rx="78" ry="12" fill="rgba(220,235,255,0.92)"/>
@@ -426,7 +499,10 @@
 <!-- topbar -->
 <div class="topbar">
   <a href="index.html" class="back-link">← Back to portfolio</a>
-  <span class="topbar-badge">International Exposure</span>
+  <div style="display:flex; align-items:center; gap:20px;">
+    <span class="topbar-badge">International Exposure</span>
+    <button id="sound-toggle-btn" class="audio-toggle" title="Toggle audio feedback">🔇 Audio OFF</button>
+  </div>
 </div>
 
 <div class="wrap">
@@ -434,7 +510,7 @@
   <!-- HERO -->
   <section class="phero">
     <div class="phero-eyebrow">Expanding the horizon · Beyond the classroom</div>
-    <h1>Exploring beyond<br>the boundaries.</h1>
+    <h1 class="glitch-hover" data-text="Exploring beyond the boundaries.">Exploring beyond<br>the boundaries.</h1>
     <p class="phero-sub">Every trip, workshop, and cross-border visit adds a layer of perspective that no textbook can. Here's where I've been, who I've met, and what it built.</p>
     <dl class="hero-meta">
       <div><dt>Countries visited</dt><dd>Malaysia 🇲🇾</dd></div>
@@ -545,6 +621,135 @@
   }
   if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches){ drawStars(); }
   else { drawStars(); cancelAnimationFrame(drawStars); }
+</script>
+
+<!-- ============================================
+     NEW DYNAMIC ENGINE: SOUNDS AND FLIGHT CONTROL
+     ============================================ -->
+<script>
+  // Web Audio Synthesizer
+  const AudioEngine = {
+    enabled: false,
+    ctx: null,
+    init() {
+      if (this.ctx) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+      } catch (e) {
+        console.warn('Audio Context not supported', e);
+      }
+    },
+    playSynth(freq, type, duration, vol) {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(vol || 0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      } catch(e) {}
+    },
+    playClick() { this.playSynth(800, 'triangle', 0.06, 0.05); },
+    playHover() { this.playSynth(1300, 'sine', 0.05, 0.03); },
+    playSuccess() {
+      this.playSynth(523.25, 'sine', 0.08, 0.06);
+      setTimeout(() => this.playSynth(659.25, 'sine', 0.08, 0.06), 70);
+      setTimeout(() => this.playSynth(783.99, 'sine', 0.12, 0.06), 140);
+    }
+  };
+
+  // Sound Sync
+  const soundBtn = document.getElementById('sound-toggle-btn');
+  if (soundBtn) {
+    const savedAudio = localStorage.getItem('ssdv_portfolio_audio');
+    if (savedAudio === 'enabled') {
+      AudioEngine.enabled = true;
+      soundBtn.textContent = '🔊 Audio ON';
+      soundBtn.classList.add('enabled');
+    }
+    
+    soundBtn.addEventListener('click', () => {
+      AudioEngine.enabled = !AudioEngine.enabled;
+      if (AudioEngine.enabled) {
+        AudioEngine.init();
+        soundBtn.textContent = '🔊 Audio ON';
+        soundBtn.classList.add('enabled');
+        localStorage.setItem('ssdv_portfolio_audio', 'enabled');
+        AudioEngine.playSuccess();
+      } else {
+        soundBtn.textContent = '🔇 Audio OFF';
+        soundBtn.classList.remove('enabled');
+        localStorage.setItem('ssdv_portfolio_audio', 'disabled');
+      }
+    });
+  }
+
+  // Hover play cues
+  document.querySelectorAll('a, button, .plane-wrap').forEach(el => {
+    el.addEventListener('mouseenter', () => AudioEngine.playHover());
+  });
+
+  // Interactive plane boost
+  let boostActive = false;
+  function triggerPlaneBoost() {
+    if (boostActive) return;
+    boostActive = true;
+    
+    // Play sonic engine sweep
+    AudioEngine.playSynth(220, 'sawtooth', 0.8, 0.12);
+    setTimeout(() => AudioEngine.playSynth(440, 'sawtooth', 0.5, 0.08), 200);
+    setTimeout(() => AudioEngine.playSynth(880, 'sine', 0.3, 0.05), 450);
+
+    const plane = document.querySelector('.plane-wrap');
+    const contrail = document.querySelector('.contrail');
+    if (plane) {
+      plane.style.animationDuration = '8s';
+      if (contrail) {
+        contrail.style.background = 'linear-gradient(to right, transparent 0%, rgba(91,168,214,0.45) 30%, rgba(255,255,255,0.1) 80%, transparent 100%)';
+        contrail.style.height = '4px';
+      }
+
+      // Add sonic boom visual ripples
+      const wave = document.createElement('div');
+      wave.style.position = 'fixed';
+      wave.style.top = '10%';
+      wave.style.left = '45%';
+      wave.style.width = '12px';
+      wave.style.height = '12px';
+      wave.style.border = '3px solid rgba(124, 196, 240, 0.8)';
+      wave.style.borderRadius = '50%';
+      wave.style.zIndex = '1';
+      wave.style.pointerEvents = 'none';
+      wave.style.animation = 'ripple-out 0.8s ease-out forwards';
+      document.body.appendChild(wave);
+      setTimeout(() => wave.remove(), 800);
+
+      // Flash color on stars canvas
+      const canvasEl = document.getElementById('sky-canvas');
+      if (canvasEl) {
+        canvasEl.style.filter = 'brightness(1.5) saturate(1.2)';
+        setTimeout(() => canvasEl.style.filter = '', 1000);
+      }
+
+      setTimeout(() => {
+        plane.style.animationDuration = '38s';
+        if (contrail) {
+          contrail.style.background = '';
+          contrail.style.height = '';
+        }
+        boostActive = false;
+      }, 8000);
+    }
+  }
 </script>
 
 </body>
