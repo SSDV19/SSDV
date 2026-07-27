@@ -604,6 +604,26 @@
     margin-bottom:12px;
     align-self:flex-start;
   }
+  /* debut / first-project badge */
+  .proj-debut{
+    border-color: rgba(255,107,74,0.45);
+    position:relative;
+  }
+  .proj-debut:hover{ box-shadow:0 0 0 1px var(--alert), 0 18px 40px -20px rgba(255,107,74,0.30); }
+  .debut-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    color:#FF9A7A;
+    border:1px solid rgba(255,107,74,0.45);
+    background:rgba(255,107,74,0.10);
+    padding:4px 10px;
+    margin-bottom:12px;
+    align-self:flex-start;
+  }
   .proj-learn-more{
     margin-top:18px;
     align-self:flex-start;
@@ -1320,19 +1340,21 @@
 
     <div class="proj-grid">
 
-      <div class="proj-card reveal">
+      <div class="proj-card proj-debut reveal">
         <div class="proj-art" style="height: 160px; position:relative;">
           <span class="proj-tag">Healthtech / IoT</span>
           <canvas id="rdoc-canvas" width="300" height="160" style="width:100%; height:100%; display:block; background:#111712;"></canvas>
         </div>
         <div class="proj-body">
-          <h3 class="glitch-hover" data-text="RDOC — Robotic Doctor">RDOC — Robotic Doctor</h3>
-          <p>An AI-embedded robotic system that monitors a person 24/7, tracking heart rate, blood pressure, and vitals — and pushes live updates to nearby hospitals automatically if it detects a medical emergency.</p>
+          <span class="debut-badge">⭐ First Project In Life</span>
+          <h3 class="glitch-hover" data-text="R-DOC — Robot Doctor">R-DOC — Robot Doctor</h3>
+          <p>An AI-driven domestic healthcare companion conceived to diagnose symptoms, recommend medications, coordinate emergency hospital responses, and bring accessible medical assistance into every home.</p>
           <div class="proj-stack">
-            <span class="chip">AI Modules</span>
-            <span class="chip">Sensors</span>
-            <span class="chip">Real-time alerts</span>
+            <span class="chip">AI Diagnosis</span>
+            <span class="chip">IoT / Robotics</span>
+            <span class="chip">Healthcare</span>
           </div>
+          <a href="rdoc.html" class="btn btn-primary proj-learn-more">Learn More →</a>
         </div>
       </div>
 
