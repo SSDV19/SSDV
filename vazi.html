@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAZI — AI Outing Platform | Sri Sai Darshan Vel V</title>
+<meta name="description" content="VAZI is an AI-driven geospatial outing planner that constructs personalized, distance-optimized itineraries across Chennai — with real-time route maps, budget intelligence, venue swapping, and live GPS navigation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --deep:    #080010;
+    --dark:    #0D0018;
+    --card:    #130020;
+    --card2:   #1A002E;
+    --pink:    #FF2D78;
+    --pink2:   #E91E8C;
+    --pink3:   #FF6B9D;
+    --purple:  #9B1DFF;
+    --purple2: #7B2FBE;
+    --rose:    #FF4FA3;
+    --white:   #FFF0F8;
+    --dim:     #C8A8CC;
+    --muted:   #8A6A90;
+    --mono:    'IBM Plex Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body:    'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--white);
+    font-family: var(--body);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ─── FLOATING EMOJI BACKGROUND ─── */
+  .emoji-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .emoji-float {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0;
+    animation: floatUp linear infinite;
+    user-select: none;
+    filter: drop-shadow(0 0 8px rgba(255,45,120,0.3));
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0;   }
+    5%   { opacity: 0.18; }
+    85%  { opacity: 0.15; }
+    100% { transform: translateY(-15vh) rotate(360deg); opacity: 0;   }
+  }
+  .e1  { left:  4%; font-size:1.8rem; animation-duration:18s; animation-delay:0s;    }
+  .e2  { left: 12%; font-size:2.2rem; animation-duration:22s; animation-delay:2s;    }
+  .e3  { left: 22%; font-size:1.5rem; animation-duration:16s; animation-delay:4s;    }
+  .e4  { left: 30%; font-size:2.8rem; animation-duration:25s; animation-delay:1s;    }
+  .e5  { left: 42%; font-size:1.6rem; animation-duration:20s; animation-delay:6s;    }
+  .e6  { left: 54%; font-size:2.4rem; animation-duration:19s; animation-delay:3s;    }
+  .e7  { left: 63%; font-size:1.9rem; animation-duration:23s; animation-delay:8s;    }
+  .e8  { left: 72%; font-size:2.1rem; animation-duration:17s; animation-delay:0.5s;  }
+  .e9  { left: 81%; font-size:1.7rem; animation-duration:21s; animation-delay:5s;    }
+  .e10 { left: 90%; font-size:2.6rem; animation-duration:24s; animation-delay:2.5s;  }
+  .e11 { left:  8%; font-size:2.0rem; animation-duration:26s; animation-delay:9s;    }
+  .e12 { left: 47%; font-size:1.4rem; animation-duration:15s; animation-delay:7s;    }
+  .e13 { left: 58%; font-size:2.3rem; animation-duration:28s; animation-delay:11s;   }
+  .e14 { left: 76%; font-size:1.6rem; animation-duration:20s; animation-delay:13s;   }
+  .e15 { left: 35%; font-size:2.5rem; animation-duration:22s; animation-delay:15s;   }
+
+  /* ─── AMBIENT BLOBS ─── */
+  .blobs {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%; filter: blur(90px);
+    opacity: 0.55; will-change: transform;
+  }
+  .blob-a {
+    width: 52vw; height: 52vw; max-width: 620px; max-height: 620px;
+    background: radial-gradient(circle, rgba(255,45,120,0.45), transparent 65%);
+    top: -18%; left: -14%;
+    animation: blobA 30s ease-in-out infinite alternate;
+  }
+  .blob-b {
+    width: 44vw; height: 44vw; max-width: 540px; max-height: 540px;
+    background: radial-gradient(circle, rgba(155,29,255,0.4), transparent 65%);
+    bottom: -16%; right: -10%;
+    animation: blobB 38s ease-in-out infinite alternate;
+  }
+  .blob-c {
+    width: 36vw; height: 36vw; max-width: 440px; max-height: 440px;
+    background: radial-gradient(circle, rgba(255,107,157,0.3), transparent 65%);
+    top: 40%; left: 52%;
+    animation: blobC 45s ease-in-out infinite alternate;
+  }
+  @keyframes blobA { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(8vw,6vw) scale(1.15);} }
+  @keyframes blobB { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(-6vw,-5vw) scale(1.1);} }
+  @keyframes blobC { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(-5vw,4vw) scale(0.9);} }
+
+  /* ─── LAYOUT WRAPPER ─── */
+  .page-wrap {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(8,0,16,0.75);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,45,120,0.15);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 18px;
+    background: linear-gradient(135deg, #FF2D78, #9B1DFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.06em;
+  }
+  .nav-back {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    text-decoration: none;
+    border: 1px solid rgba(255,45,120,0.3);
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.25s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-back:hover {
+    background: rgba(255,45,120,0.12);
+    color: var(--pink3);
+    border-color: var(--pink);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 140px 0 80px;
+    text-align: center;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pink3);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before,
+  .hero-eyebrow::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 48px;
+    background: linear-gradient(90deg, transparent, rgba(255,107,157,0.6));
+  }
+  .hero-eyebrow::after {
+    background: linear-gradient(90deg, rgba(255,107,157,0.6), transparent);
+  }
+  .hero-title {
+    font-family: var(--display);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.07;
+    margin-bottom: 22px;
+    background: linear-gradient(135deg, #ffffff 0%, #FF6B9D 45%, #9B1DFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--dim);
+    max-width: 600px;
+    margin: 0 auto 36px;
+    line-height: 1.7;
+  }
+  .hero-badges {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+  .badge-pink  { color: #FF6B9D; border-color: rgba(255,107,157,0.5); background: rgba(255,45,120,0.1);    }
+  .badge-purple{ color: #C678FF; border-color: rgba(155,29,255,0.5);  background: rgba(155,29,255,0.1);   }
+  .badge-gold  { color: #FFD166; border-color: rgba(255,209,102,0.4); background: rgba(255,209,102,0.08); }
+
+  /* ─── UNDER BUILD BANNER ─── */
+  .under-build {
+    margin: 0 auto 64px;
+    max-width: 760px;
+    background: linear-gradient(135deg, rgba(255,45,120,0.1), rgba(155,29,255,0.1));
+    border: 1px solid rgba(255,45,120,0.4);
+    border-radius: 10px;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .under-build::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #FF2D78, #9B1DFF, #FF2D78);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100%} 100%{background-position:-100%} }
+  .under-build-icon { font-size: 2rem; flex-shrink: 0; }
+  .under-build-text { font-size: 0.92rem; color: var(--dim); line-height: 1.6; }
+  .under-build-text strong { color: var(--pink3); }
+
+  /* ─── SECTION DIVIDER ─── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,45,120,0.25), transparent);
+  }
+  .section-title-lg {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--dim);
+    max-width: 660px;
+    line-height: 1.7;
+    margin-bottom: 80px;
+  }
+
+  /* ─── STEP BLOCKS (alternating) ─── */
+  .steps-section { padding: 0 0 100px; }
+
+  .step-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+    margin-bottom: 100px;
+    position: relative;
+  }
+  .step-block::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 1px;
+    height: 70%;
+    background: linear-gradient(to bottom, transparent, rgba(255,45,120,0.2), transparent);
+    pointer-events: none;
+  }
+  @media (max-width: 800px) {
+    .step-block { grid-template-columns: 1fr; gap: 32px; }
+    .step-block::before { display: none; }
+    .step-block.reverse .step-img  { order: -1; }
+    .step-block.reverse .step-text { order: 1;  }
+  }
+  .step-block.reverse .step-img  { order: 1; }
+  .step-block.reverse .step-text { order: 2; }
+
+  /* text side */
+  .step-text { display: flex; flex-direction: column; justify-content: center; }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--pink);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .step-num::after {
+    content: '';
+    width: 36px; height: 1px;
+    background: rgba(255,45,120,0.5);
+    display: block;
+  }
+  .step-title {
+    font-family: var(--display);
+    font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .step-desc {
+    font-size: 0.97rem;
+    color: var(--dim);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .step-points {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step-points li {
+    font-size: 0.9rem;
+    color: var(--dim);
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.6;
+  }
+  .step-points li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--pink);
+    font-weight: 600;
+  }
+
+  /* image side */
+  .step-img {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,45,120,0.2);
+    box-shadow:
+      0 0 0 1px rgba(155,29,255,0.1),
+      0 24px 60px -20px rgba(0,0,0,0.7),
+      0 0 40px -10px rgba(255,45,120,0.12);
+    aspect-ratio: 16/9;
+    background: var(--card);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .step-img:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow:
+      0 0 0 1px rgba(255,45,120,0.25),
+      0 32px 70px -20px rgba(0,0,0,0.75),
+      0 0 60px -10px rgba(255,45,120,0.22);
+  }
+  .step-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Step-specific CSS art fallbacks when no image */
+  .step-img-art {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--card2);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    padding: 20px;
+  }
+  .step-img-art svg { width: 100%; height: 100%; }
+
+  /* step connector line */
+  .step-connector {
+    display: flex;
+    justify-content: center;
+    margin: -50px 0 -50px;
+    position: relative;
+    z-index: 1;
+  }
+  .step-connector-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .step-connector-dot {
+    width: 10px; height: 10px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,45,120,0.6);
+  }
+  .step-connector-bar {
+    width: 2px; height: 60px;
+    background: linear-gradient(to bottom, var(--pink), var(--purple));
+    opacity: 0.4;
+  }
+
+  /* ─── TECH STACK SECTION ─── */
+  .tech-section {
+    padding: 80px 0;
+    border-top: 1px solid rgba(255,45,120,0.1);
+    border-bottom: 1px solid rgba(255,45,120,0.1);
+    margin-bottom: 80px;
+    text-align: center;
+  }
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .tech-pill {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+    border: 1px solid rgba(255,45,120,0.25);
+    background: rgba(255,45,120,0.06);
+    padding: 8px 18px;
+    border-radius: 100px;
+    transition: all 0.25s;
+  }
+  .tech-pill:hover {
+    border-color: var(--pink);
+    color: var(--pink3);
+    background: rgba(255,45,120,0.12);
+    box-shadow: 0 0 14px rgba(255,45,120,0.2);
+  }
+
+  /* ─── STATUS SECTION ─── */
+  .status-section {
+    padding: 80px 0;
+    text-align: center;
+  }
+  .status-card {
+    max-width: 680px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, rgba(255,45,120,0.08), rgba(155,29,255,0.08));
+    border: 1px solid rgba(255,45,120,0.3);
+    border-radius: 16px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .status-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #FF2D78, #9B1DFF, #FF6B9D);
+    background-size: 200%;
+    animation: shimmer 2s linear infinite;
+  }
+  .status-icon { font-size: 3.5rem; margin-bottom: 20px; }
+  .status-title {
+    font-family: var(--display);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 14px;
+  }
+  .status-desc {
+    font-size: 0.95rem;
+    color: var(--dim);
+    line-height: 1.75;
+    margin-bottom: 24px;
+  }
+  .progress-wrap { margin: 28px 0; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, #FF2D78, #9B1DFF);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: progressSheen 1.8s ease-in-out infinite;
+  }
+  @keyframes progressSheen {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%);  }
+  }
+
+  /* ─── CTA FOOTER ─── */
+  .cta-footer {
+    padding: 80px 0 100px;
+    text-align: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 14px 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s;
+    border: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #FF2D78, #9B1DFF);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(255,45,120,0.35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(255,45,120,0.45);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--dim);
+    border: 1px solid rgba(255,45,120,0.35);
+  }
+  .btn-ghost:hover {
+    background: rgba(255,45,120,0.1);
+    color: var(--pink3);
+    border-color: var(--pink);
+  }
+  .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+
+  /* ─── REVEAL ANIMATION ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(var(--pink), var(--purple)); border-radius: 2px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    nav { padding: 12px 16px; }
+    .page-wrap { padding: 0 16px; }
+    .hero { padding: 110px 0 60px; }
+    .under-build { flex-direction: column; text-align: center; }
+    .status-card { padding: 32px 24px; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Floating Emoji Background -->
+<div class="emoji-bg" aria-hidden="true">
+  <span class="emoji-float e1">✈️</span>
+  <span class="emoji-float e2">🗺️</span>
+  <span class="emoji-float e3">🧳</span>
+  <span class="emoji-float e4">📍</span>
+  <span class="emoji-float e5">🌴</span>
+  <span class="emoji-float e6">🛺</span>
+  <span class="emoji-float e7">🍽️</span>
+  <span class="emoji-float e8">🎬</span>
+  <span class="emoji-float e9">🧭</span>
+  <span class="emoji-float e10">🌆</span>
+  <span class="emoji-float e11">🎡</span>
+  <span class="emoji-float e12">☕</span>
+  <span class="emoji-float e13">🎭</span>
+  <span class="emoji-float e14">🚗</span>
+  <span class="emoji-float e15">💡</span>
+</div>
+
+<!-- Ambient Blobs -->
+<div class="blobs" aria-hidden="true">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+</div>
+
+<!-- Navigation -->
+<nav>
+  <span class="nav-logo">✈ VAZI</span>
+  <a href="index.html#projects" class="nav-back">← Back to Portfolio</a>
+</nav>
+
+<!-- Main Content -->
+<div class="page-wrap">
+
+  <!-- ─── HERO ─── -->
+  <section class="hero reveal">
+    <div class="hero-eyebrow">✈️ AI OUTING PLATFORM &bull; CHENNAI EDITION</div>
+    <h1 class="hero-title">Plan Perfect Outings<br>in Seconds, Not Hours.</h1>
+    <p class="hero-sub">Stop switching between maps, restaurant apps, and reviews. Enter your budget, time, and mood — VAZI constructs a personalized, distance-optimized itinerary just for you.</p>
+    <div class="hero-badges">
+      <span class="badge badge-pink">🔥 New Idea</span>
+      <span class="badge badge-purple">🧠 Geospatial AI</span>
+      <span class="badge badge-gold">📍 Chennai MVP</span>
+      <span class="badge badge-pink">🗺️ Live GPS Navigation</span>
+      <span class="badge badge-purple">💰 Budget Intelligence</span>
+    </div>
+  </section>
+
+  <!-- ─── UNDER BUILD BANNER ─── -->
+  <div class="under-build reveal">
+    <div class="under-build-icon">🚧</div>
+    <div class="under-build-text">
+      <strong>This project is actively under development and not yet complete.</strong><br>
+      VAZI is an evolving idea being built iteratively. The features described below represent the current working state of the MVP — some features are fully functional while others are still being refined and built out. Expect exciting updates!
+    </div>
+  </div>
+
+  <!-- ─── WHAT IS VAZI ─── -->
+  <section style="margin-bottom:80px;" class="reveal">
+    <div class="section-label">01 / OVERVIEW</div>
+    <h2 class="section-title-lg">What is VAZI?</h2>
+    <p class="section-desc">VAZI is an AI-powered outing planning platform built specifically for Chennai. It takes your mood, budget, available time, group size, and preferred area — and generates a complete multi-venue itinerary with real-time distances, curated cost breakdowns, and a live interactive route map. Think of it as a smart travel agent in your browser, calibrated for Chennai life.</p>
+  </section>
+
+  <!-- ─── STEP-BY-STEP WORKING ─── -->
+  <section class="steps-section">
+    <div class="section-label">02 / HOW IT WORKS</div>
+    <h2 class="section-title-lg">Step-by-Step Working</h2>
+    <p class="section-desc">Here's how VAZI takes you from zero to a fully planned outing in seconds.</p>
+
+    <!-- STEP 1 — Text Left, Image Right -->
+    <div class="step-block reveal" id="step-1">
+      <div class="step-text">
+        <div class="step-num">STEP 01</div>
+        <h3 class="step-title">Set Your Outing Preferences</h3>
+        <p class="step-desc">Everything starts with understanding what kind of outing you want. VAZI asks you just four simple questions to build your perfect plan.</p>
+        <ul class="step-points">
+          <li><strong>Outing Purpose</strong> — Date Night, Friends Hangout, Family Outing, or Solo Explorer</li>
+          <li><strong>Distance Preference</strong> — Nearby Hangout (&lt;5km), Moderate Drive (5–15km), or Long Drive (ECR/Highway)</li>
+          <li><strong>Total Budget</strong> — Pick from ₹500 to ₹5000 per person, with quick-select chips</li>
+          <li><strong>Available Duration</strong> — Set how many hours you have (slider-based)</li>
+          <li><strong>Start Time & Group Size</strong> — So timings and totals are personalized</li>
+          <li><strong>Preferred Area & Transport Mode</strong> — Car, Bike, or Cab/Auto</li>
+        </ul>
+      </div>
+      <div class="step-img">
+        <img src="vazi_img1.jpg" alt="VAZI Step 1 — Outing Preferences Form with Interactive Map"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="step-img-art" style="display:none;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="270" fill="#130020"/>
+            <!-- Left panel -->
+            <rect x="10" y="10" width="220" height="250" rx="8" fill="#1A002E" stroke="#3D1060" stroke-width="1"/>
+            <text x="24" y="32" font-family="Inter" font-size="9" font-weight="600" fill="#FFF0F8">Plan Your Next Outing</text>
+            <text x="24" y="48" font-family="Inter" font-size="7" fill="#8A6A90">AI-driven geospatial itinerary engine</text>
+            <!-- Purpose buttons -->
+            <text x="24" y="70" font-family="Inter" font-size="7" fill="#C8A8CC">1. WHAT'S THE OUTING PURPOSE?</text>
+            <rect x="24" y="76" width="44" height="20" rx="4" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="46" y="89" text-anchor="middle" font-family="Inter" font-size="6" fill="#8A6A90">Date Night</text>
+            <rect x="72" y="76" width="52" height="20" rx="4" fill="#9B1DFF" stroke="#9B1DFF" stroke-width="0.8"/>
+            <text x="98" y="89" text-anchor="middle" font-family="Inter" font-size="6" fill="#fff">Friends 🙋</text>
+            <rect x="128" y="76" width="48" height="20" rx="4" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="152" y="89" text-anchor="middle" font-family="Inter" font-size="6" fill="#8A6A90">Family</text>
+            <!-- Distance -->
+            <text x="24" y="112" font-family="Inter" font-size="7" fill="#C8A8CC">2. DISTANCE PREFERENCE</text>
+            <rect x="24" y="118" width="56" height="18" rx="9" fill="#FF2D78" stroke="#FF2D78" stroke-width="0.8"/>
+            <text x="52" y="129" text-anchor="middle" font-family="Inter" font-size="5.5" fill="#fff">Nearby &lt;5km</text>
+            <rect x="84" y="118" width="56" height="18" rx="9" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="112" y="129" text-anchor="middle" font-family="Inter" font-size="5.5" fill="#8A6A90">Moderate</text>
+            <rect x="144" y="118" width="50" height="18" rx="9" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="169" y="129" text-anchor="middle" font-family="Inter" font-size="5.5" fill="#8A6A90">Long Drive</text>
+            <!-- Budget -->
+            <text x="24" y="152" font-family="Inter" font-size="7" fill="#C8A8CC">TOTAL BUDGET</text>
+            <text x="140" y="152" font-family="Inter" font-size="11" font-weight="700" fill="#4ADE80" text-anchor="end">₹2000</text>
+            <rect x="24" y="160" width="180" height="10" rx="5" fill="#0D0018"/>
+            <rect x="24" y="160" width="100" height="10" rx="5" fill="#4ADE80" opacity="0.8"/>
+            <!-- Generate button -->
+            <rect x="24" y="220" width="190" height="26" rx="5" fill="url(#vg1)"/>
+            <defs><linearGradient id="vg1" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF2D78"/><stop offset="100%" stop-color="#9B1DFF"/></linearGradient></defs>
+            <text x="119" y="237" text-anchor="middle" font-family="Inter" font-size="8" font-weight="600" fill="#fff">⚡ Generate AI Outing Itinerary</text>
+            <!-- Right panel: Map -->
+            <rect x="240" y="10" width="230" height="250" rx="8" fill="#1A002E" stroke="#3D1060" stroke-width="1"/>
+            <text x="256" y="28" font-family="Inter" font-size="8" font-weight="600" fill="#FFF0F8">🗺️ Interactive Outing Route Map</text>
+            <!-- Map bg -->
+            <rect x="252" y="36" width="204" height="148" rx="4" fill="#0f1726"/>
+            <!-- Map roads -->
+            <g stroke="#1e2d4a" stroke-width="3">
+              <line x1="252" y1="80" x2="456" y2="80"/>
+              <line x1="252" y1="110" x2="456" y2="110"/>
+              <line x1="320" y1="36" x2="320" y2="184"/>
+              <line x1="380" y1="36" x2="380" y2="184"/>
+            </g>
+            <!-- Route line -->
+            <polyline points="268,164 310,130 350,100 400,75 440,55" stroke="#FF2D78" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+            <!-- Pins -->
+            <circle cx="268" cy="164" r="8" fill="#00d4ff"/>
+            <circle cx="310" cy="130" r="7" fill="#9B1DFF"/>
+            <text x="310" y="133" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">2</text>
+            <circle cx="350" cy="100" r="7" fill="#9B1DFF"/>
+            <text x="350" y="103" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">3</text>
+            <circle cx="440" cy="55" r="7" fill="#FF2D78"/>
+            <text x="440" y="58" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">4</text>
+            <!-- Leg info -->
+            <rect x="252" y="192" width="204" height="58" rx="4" fill="#0D0018"/>
+            <text x="258" y="206" font-family="Inter" font-size="6" fill="#8A6A90">FROM PRESENT LOC</text>
+            <text x="258" y="215" font-family="Inter" font-size="6.5" font-weight="600" fill="#FFF0F8">Wild Garden Cafe</text>
+            <text x="258" y="224" font-family="Inter" font-size="6" fill="#8A6A90">3.8km • ~9 mins</text>
+            <text x="330" y="206" font-family="Inter" font-size="6" fill="#8A6A90">LEG 2</text>
+            <text x="330" y="215" font-family="Inter" font-size="6.5" font-weight="600" fill="#FFF0F8">Sathyam Cinemas</text>
+            <text x="330" y="224" font-family="Inter" font-size="6" fill="#8A6A90">1.6km • ~5 mins</text>
+            <text x="395" y="206" font-family="Inter" font-size="6" fill="#8A6A90">LEG 3</text>
+            <text x="395" y="215" font-family="Inter" font-size="6.5" font-weight="600" fill="#FFF0F8">Zara's Pizzeria</text>
+            <text x="395" y="224" font-family="Inter" font-size="6" fill="#8A6A90">5.4km • ~13 mins</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="step-connector">
+      <div class="step-connector-line">
+        <div class="step-connector-dot"></div>
+        <div class="step-connector-bar"></div>
+        <div class="step-connector-dot"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 — Image Left, Text Right -->
+    <div class="step-block reverse reveal" id="step-2">
+      <div class="step-img">
+        <img src="vazi_img2.jpg" alt="VAZI Step 2 — AI Generated Itinerary with Budget Breakdown"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="step-img-art" style="display:none;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="270" fill="#130020"/>
+            <!-- Header -->
+            <rect x="10" y="10" width="460" height="30" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="1"/>
+            <rect x="20" y="17" width="52" height="14" rx="7" fill="#9B1DFF" opacity="0.6"/>
+            <text x="46" y="27" text-anchor="middle" font-family="Inter" font-size="7" fill="#fff">DATE OUTING</text>
+            <text x="82" y="27" font-family="Inter" font-size="7" fill="#8A6A90">4 Venues • 5 Hours</text>
+            <text x="400" y="27" font-family="Inter" font-size="7" fill="#8A6A90" text-anchor="end">🚀 START OUTING</text>
+            <text x="460" y="27" font-family="Inter" font-size="7" fill="#FF6B9D" text-anchor="end">💾 Save</text>
+            <!-- Title -->
+            <text x="24" y="58" font-family="Inter" font-size="13" font-weight="700" fill="#FFF0F8">Your Customized Chennai Itinerary</text>
+            <!-- Stats -->
+            <rect x="10" y="68" width="145" height="40" rx="4" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="20" y="82" font-family="Inter" font-size="7" fill="#8A6A90">TOTAL BUDGET</text>
+            <text x="20" y="98" font-family="Inter" font-size="14" font-weight="700" fill="#4ADE80">₹2000</text>
+            <rect x="163" y="68" width="150" height="40" rx="4" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="173" y="82" font-family="Inter" font-size="7" fill="#8A6A90">ESTIMATED SPEND (2PPL)</text>
+            <text x="173" y="98" font-family="Inter" font-size="14" font-weight="700" fill="#FFF0F8">₹2000</text>
+            <rect x="321" y="68" width="148" height="40" rx="4" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="331" y="82" font-family="Inter" font-size="7" fill="#8A6A90">REMAINING BALANCE</text>
+            <text x="331" y="98" font-family="Inter" font-size="14" font-weight="700" fill="#FF6B9D">₹0</text>
+            <!-- Progress bar -->
+            <text x="10" y="122" font-family="Inter" font-size="7" fill="#8A6A90">Budget Utilization (100%)</text>
+            <rect x="10" y="126" width="460" height="8" rx="4" fill="#0D0018"/>
+            <defs><linearGradient id="vgp" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF2D78"/><stop offset="100%" stop-color="#4ADE80"/></linearGradient></defs>
+            <rect x="10" y="126" width="458" height="8" rx="4" fill="url(#vgp)"/>
+            <!-- AI reasoning box -->
+            <rect x="10" y="144" width="460" height="42" rx="6" fill="#1A002E" stroke="#9B1DFF" stroke-width="0.8" opacity="0.7"/>
+            <text x="20" y="158" font-family="Inter" font-size="7" font-weight="600" fill="#C678FF">✨ VAZI AI Planning Reasoning:</text>
+            <text x="20" y="170" font-family="Inter" font-size="6.5" fill="#C8A8CC">VAZI Engine generated this custom date itinerary starting from Nungambakkam. 4 prime locations</text>
+            <text x="20" y="180" font-family="Inter" font-size="6.5" fill="#C8A8CC">(Wild Garden Cafe → Sathyam Cinemas → Zara's Pizzeria → Sandy's Chocolate Laboratory). Total: ₹2000.</text>
+            <!-- Venue card preview -->
+            <rect x="10" y="196" width="460" height="64" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <circle cx="26" cy="212" r="8" fill="#9B1DFF"/>
+            <text x="26" y="215" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">1</text>
+            <rect x="44" y="200" width="54" height="36" rx="4" fill="#2A1040"/>
+            <text x="71" y="222" text-anchor="middle" font-size="7" fill="#8A6A90" font-family="sans-serif">📷 cafe</text>
+            <rect x="72" y="200" width="30" height="10" rx="5" fill="#9B1DFF" opacity="0.7"/>
+            <text x="87" y="208" text-anchor="middle" font-family="Inter" font-size="6" fill="#fff">CAFE</text>
+            <text x="108" y="208" font-family="Inter" font-size="6.5" fill="#FFD166">⭐ 4.8</text>
+            <text x="108" y="218" font-family="Inter" font-size="9" font-weight="600" fill="#FFF0F8">Wild Garden Cafe at Amethyst</text>
+            <text x="108" y="228" font-family="Inter" font-size="6.5" fill="#8A6A90">📍 Royapettah, Chennai</text>
+            <text x="108" y="238" font-family="Inter" font-size="6.5" fill="#8A6A90">⏱ 4:09PM–5:24PM  💰 ₹650/person (₹1300)</text>
+            <rect x="400" y="210" width="58" height="20" rx="10" fill="url(#vg1)"/>
+            <text x="429" y="224" text-anchor="middle" font-family="Inter" font-size="7" fill="#fff">⇆ Swap</text>
+          </svg>
+        </div>
+      </div>
+      <div class="step-text">
+        <div class="step-num">STEP 02</div>
+        <h3 class="step-title">AI Generates Your Personalized Itinerary</h3>
+        <p class="step-desc">Hit "Generate AI Outing Itinerary" and VAZI's geospatial AI engine kicks in. In seconds, it constructs a complete multi-venue plan optimized for distance, budget, and your mood.</p>
+        <ul class="step-points">
+          <li>AI selects 3–5 venues that fit your purpose (café → cinema → restaurant → dessert, for example)</li>
+          <li>Each venue is sequenced to minimize travel distance between stops</li>
+          <li>Timing is auto-calculated: arrival time, recommended stay duration, and departure time for each leg</li>
+          <li>Per-person and total costs are computed with curated menu highlights</li>
+          <li>A natural-language <strong>AI Planning Reasoning</strong> explains why this itinerary was chosen</li>
+          <li>Full budget utilization and remaining balance displayed at a glance</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="step-connector">
+      <div class="step-connector-line">
+        <div class="step-connector-dot"></div>
+        <div class="step-connector-bar"></div>
+        <div class="step-connector-dot"></div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — Text Left, Image Right -->
+    <div class="step-block reveal" id="step-3">
+      <div class="step-text">
+        <div class="step-num">STEP 03</div>
+        <h3 class="step-title">Browse Venues & Swap Freely</h3>
+        <p class="step-desc">Don't like a venue? No problem. Each card in the itinerary is fully interactive — you can swap any venue for an alternative while the AI re-optimizes the rest.</p>
+        <ul class="step-points">
+          <li>Each venue card shows category (Cafe / Movie / Restaurant / Dessert), rating, location, timings, and per-person cost</li>
+          <li><strong>Curated Menu Highlights</strong> show the most relevant food/drink options with pricing</li>
+          <li>AI-written tip explains why each venue was picked ("Perfect starting point for a relaxed date vibe")</li>
+          <li><strong>Swap button</strong> replaces the venue while keeping the rest of the itinerary intact</li>
+          <li>Reorder venues using the up/down arrows, or delete any stop entirely</li>
+          <li>Travel distance and estimated time between each stop shown as connectors</li>
+        </ul>
+      </div>
+      <div class="step-img">
+        <img src="vazi_img3.jpg" alt="VAZI Step 3 — Venue Cards with Swap Feature"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="step-img-art" style="display:none;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="270" fill="#130020"/>
+            <!-- Card 1 -->
+            <rect x="10" y="10" width="460" height="72" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <circle cx="26" cy="28" r="8" fill="#FF2D78"/>
+            <text x="26" y="31" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">1</text>
+            <rect x="44" y="16" width="50" height="34" rx="4" fill="#2A1040"/>
+            <text x="69" y="37" text-anchor="middle" font-size="18" font-family="sans-serif">☕</text>
+            <rect x="100" y="16" width="28" height="10" rx="5" fill="#9B1DFF" opacity="0.7"/>
+            <text x="114" y="24" text-anchor="middle" font-family="Inter" font-size="6" fill="#fff">CAFE</text>
+            <text x="134" y="24" font-family="Inter" font-size="6" fill="#FFD166">⭐ 4.8</text>
+            <text x="100" y="36" font-family="Inter" font-size="9" font-weight="700" fill="#FFF0F8">Wild Garden Cafe at Amethyst</text>
+            <text x="100" y="46" font-family="Inter" font-size="6.5" fill="#8A6A90">📍 Royapettah  ⏱ 4:09PM–5:24PM  💰 ₹650/person</text>
+            <!-- Mini menu -->
+            <rect x="100" y="52" width="62" height="14" rx="3" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="131" y="62" text-anchor="middle" font-family="Inter" font-size="6" fill="#C8A8CC">Cocktail  ₹350</text>
+            <rect x="168" y="52" width="72" height="14" rx="3" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="204" y="62" text-anchor="middle" font-family="Inter" font-size="6" fill="#C8A8CC">Brunch plate  ₹420</text>
+            <rect x="404" y="26" width="54" height="18" rx="9" fill="url(#vg1)"/>
+            <text x="431" y="38" text-anchor="middle" font-family="Inter" font-size="7" fill="#fff">⇆ Swap</text>
+            <!-- Travel indicator -->
+            <rect x="10" y="88" width="200" height="14" rx="7" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="24" y="98" font-family="Inter" font-size="6" fill="#C8A8CC">🛫 Wild Garden → Sathyam: 1.6km  ~5 mins</text>
+            <!-- Card 2 -->
+            <rect x="10" y="108" width="460" height="72" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <circle cx="26" cy="126" r="8" fill="#9B1DFF"/>
+            <text x="26" y="129" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">2</text>
+            <rect x="44" y="114" width="50" height="34" rx="4" fill="#2A1040"/>
+            <text x="69" y="135" text-anchor="middle" font-size="18" font-family="sans-serif">🎬</text>
+            <rect x="100" y="114" width="32" height="10" rx="5" fill="#E91E8C" opacity="0.7"/>
+            <text x="116" y="122" text-anchor="middle" font-family="Inter" font-size="6" fill="#fff">MOVIE</text>
+            <text x="138" y="122" font-family="Inter" font-size="6" fill="#FFD166">⭐ 4.7</text>
+            <text x="100" y="134" font-family="Inter" font-size="9" font-weight="700" fill="#FFF0F8">Sathyam Cinemas</text>
+            <text x="100" y="144" font-family="Inter" font-size="6.5" fill="#8A6A90">📍 Royapettah  ⏱ 5:29PM–7:59PM  💰 ₹450/person</text>
+            <rect x="100" y="150" width="54" height="14" rx="3" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="127" y="160" text-anchor="middle" font-family="Inter" font-size="6" fill="#C8A8CC">Ticket  ₹250</text>
+            <rect x="160" y="150" width="74" height="14" rx="3" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="197" y="160" text-anchor="middle" font-family="Inter" font-size="6" fill="#C8A8CC">Popcorn combo  ₹200</text>
+            <rect x="404" y="124" width="54" height="18" rx="9" fill="url(#vg1)"/>
+            <text x="431" y="136" text-anchor="middle" font-family="Inter" font-size="7" fill="#fff">⇆ Swap</text>
+            <!-- Travel indicator -->
+            <rect x="10" y="186" width="220" height="14" rx="7" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="24" y="196" font-family="Inter" font-size="6" fill="#C8A8CC">🛫 Sathyam → Zara's Pizzeria: 5.4km  ~13 mins</text>
+            <!-- Card 3 -->
+            <rect x="10" y="206" width="460" height="54" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <circle cx="26" cy="224" r="8" fill="#FF6B9D"/>
+            <text x="26" y="227" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">3</text>
+            <rect x="44" y="212" width="50" height="34" rx="4" fill="#2A1040"/>
+            <text x="69" y="233" text-anchor="middle" font-size="18" font-family="sans-serif">🍕</text>
+            <rect x="100" y="212" width="44" height="10" rx="5" fill="#FF2D78" opacity="0.5"/>
+            <text x="122" y="220" text-anchor="middle" font-family="Inter" font-size="6" fill="#fff">RESTAURANT</text>
+            <text x="150" y="220" font-family="Inter" font-size="6" fill="#FFD166">⭐ 4.3</text>
+            <text x="100" y="232" font-family="Inter" font-size="9" font-weight="700" fill="#FFF0F8">Zara's Pizzeria Besant Nagar</text>
+            <text x="100" y="242" font-family="Inter" font-size="6.5" fill="#8A6A90">📍 Besant Nagar, Chennai  ⏱ 8:12PM–9:22PM  💰 ₹550/person</text>
+            <rect x="404" y="222" width="54" height="18" rx="9" fill="url(#vg1)"/>
+            <text x="431" y="234" text-anchor="middle" font-family="Inter" font-size="7" fill="#fff">⇆ Swap</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="step-connector">
+      <div class="step-connector-line">
+        <div class="step-connector-dot"></div>
+        <div class="step-connector-bar"></div>
+        <div class="step-connector-dot"></div>
+      </div>
+    </div>
+
+    <!-- STEP 4 — Image Left, Text Right -->
+    <div class="step-block reverse reveal" id="step-4">
+      <div class="step-img">
+        <img src="vazi_img4.jpg" alt="VAZI Step 4 — Budget Summary and Full Itinerary View"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="step-img-art" style="display:none;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="270" fill="#130020"/>
+            <!-- Budget summary card -->
+            <rect x="10" y="10" width="460" height="80" rx="8" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="24" y="32" font-family="Inter" font-size="11" font-weight="700" fill="#FFF0F8">Your Customized Chennai Itinerary</text>
+            <text x="24" y="46" font-family="Inter" font-size="7" fill="#8A6A90">Budget Utilization: 100% used</text>
+            <!-- Progress gradient -->
+            <rect x="24" y="52" width="420" height="10" rx="5" fill="#0D0018"/>
+            <defs>
+              <linearGradient id="pg2" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#FF2D78"/>
+                <stop offset="100%" stop-color="#4ADE80"/>
+              </linearGradient>
+            </defs>
+            <rect x="24" y="52" width="418" height="10" rx="5" fill="url(#pg2)"/>
+            <text x="24" y="75" font-family="Inter" font-size="7" fill="#C8A8CC">Budget: ₹2000  |  Spend: ₹2000  |  Buffer: ₹0</text>
+            <!-- Full route timeline -->
+            <rect x="10" y="100" width="220" height="160" rx="8" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="22" y="118" font-family="Inter" font-size="9" font-weight="600" fill="#FFF0F8">🗺️ Outing Route Map</text>
+            <!-- Map mini -->
+            <rect x="18" y="124" width="204" height="100" rx="4" fill="#0f1726"/>
+            <g stroke="#1e2d4a" stroke-width="2"><line x1="18" y1="155" x2="222" y2="155"/><line x1="18" y1="175" x2="222" y2="175"/><line x1="80" y1="124" x2="80" y2="224"/><line x1="140" y1="124" x2="140" y2="224"/><line x1="190" y1="124" x2="190" y2="224"/></g>
+            <polyline points="34,210 80,190 140,165 190,148 215,138" stroke="#FF2D78" stroke-width="1.5" fill="none" stroke-dasharray="4 2"/>
+            <circle cx="34" cy="210" r="6" fill="#00d4ff"/>
+            <circle cx="80" cy="190" r="5" fill="#9B1DFF"/>
+            <text x="80" y="193" text-anchor="middle" font-size="6" fill="#fff">2</text>
+            <circle cx="140" cy="165" r="5" fill="#9B1DFF"/>
+            <text x="140" y="168" text-anchor="middle" font-size="6" fill="#fff">3</text>
+            <circle cx="215" cy="138" r="5" fill="#FF2D78"/>
+            <text x="215" y="141" text-anchor="middle" font-size="6" fill="#fff">4</text>
+            <!-- Right: full itinerary list -->
+            <rect x="238" y="100" width="232" height="160" rx="8" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="252" y="118" font-family="Inter" font-size="9" font-weight="600" fill="#FFF0F8">Full Itinerary</text>
+            <!-- Item 1 -->
+            <circle cx="258" cy="138" r="6" fill="#FF2D78"/>
+            <text x="258" y="141" text-anchor="middle" font-size="7" fill="#fff">1</text>
+            <text x="270" y="137" font-family="Inter" font-size="7.5" font-weight="600" fill="#FFF0F8">Wild Garden Cafe</text>
+            <text x="270" y="147" font-family="Inter" font-size="6" fill="#8A6A90">4:09 PM → Leave 5:24 PM</text>
+            <!-- Item 2 -->
+            <circle cx="258" cy="168" r="6" fill="#9B1DFF"/>
+            <text x="258" y="171" text-anchor="middle" font-size="7" fill="#fff">2</text>
+            <text x="270" y="167" font-family="Inter" font-size="7.5" font-weight="600" fill="#FFF0F8">Sathyam Cinemas</text>
+            <text x="270" y="177" font-family="Inter" font-size="6" fill="#8A6A90">5:29 PM → Leave 7:59 PM</text>
+            <!-- Item 3 -->
+            <circle cx="258" cy="198" r="6" fill="#FF6B9D"/>
+            <text x="258" y="201" text-anchor="middle" font-size="7" fill="#fff">3</text>
+            <text x="270" y="197" font-family="Inter" font-size="7.5" font-weight="600" fill="#FFF0F8">Zara's Pizzeria</text>
+            <text x="270" y="207" font-family="Inter" font-size="6" fill="#8A6A90">8:12 PM → Leave 9:22 PM</text>
+            <!-- Item 4 -->
+            <circle cx="258" cy="228" r="6" fill="#FFD166"/>
+            <text x="258" y="231" text-anchor="middle" font-size="7" fill="#333">4</text>
+            <text x="270" y="227" font-family="Inter" font-size="7.5" font-weight="600" fill="#FFF0F8">Sandy's Chocolate Lab</text>
+            <text x="270" y="237" font-family="Inter" font-size="6" fill="#8A6A90">9:27 PM → Leave 10:17 PM</text>
+          </svg>
+        </div>
+      </div>
+      <div class="step-text">
+        <div class="step-num">STEP 04</div>
+        <h3 class="step-title">Review the Full Plan & Budget Summary</h3>
+        <p class="step-desc">Before starting your outing, VAZI gives you a complete bird's-eye view — every venue, every timing, every rupee, all in one screen.</p>
+        <ul class="step-points">
+          <li>Full budget utilization shown with a color-coded gradient bar</li>
+          <li>Interactive route map shows all 4 stops plotted on a live Leaflet map with numbered pins</li>
+          <li>Complete itinerary timeline with arrival and departure times for each venue</li>
+          <li>Distance and estimated travel time for every inter-venue leg</li>
+          <li><strong>Save Itinerary</strong> to revisit later from History & Saved</li>
+          <li>One-tap <strong>Start Outing</strong> to launch live GPS navigation mode</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="step-connector">
+      <div class="step-connector-line">
+        <div class="step-connector-dot"></div>
+        <div class="step-connector-bar"></div>
+        <div class="step-connector-dot"></div>
+      </div>
+    </div>
+
+    <!-- STEP 5 — Text Left, Image Right -->
+    <div class="step-block reveal" id="step-5">
+      <div class="step-text">
+        <div class="step-num">STEP 05</div>
+        <h3 class="step-title">Live GPS Navigation — Leg by Leg</h3>
+        <p class="step-desc">When you're ready to go, VAZI switches into a full live navigation mode. This isn't just a map — it's a real-time outing co-pilot that guides you through each venue stop.</p>
+        <ul class="step-points">
+          <li>Real-time traffic detection via Google Maps Live Matrix ("Smooth flow detected")</li>
+          <li>Current location shown as a cyan "You Are Here" dot on a live Leaflet map</li>
+          <li>Optimal route drawn to the next destination with a dashed purple route line</li>
+          <li>"En Route" panel shows venue name, category, and predicted minutes away</li>
+          <li><strong>Predicted ETA</strong> and <strong>Expected Leave</strong> time always visible</li>
+          <li>One-tap <strong>Reached!</strong> button to check in and proceed to the next leg</li>
+          <li>All 4 outing stops listed as a real-time progress tracker on the right panel</li>
+        </ul>
+      </div>
+      <div class="step-img">
+        <img src="vazi_img5.jpg" alt="VAZI Step 5 — Live GPS Navigation Mode"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="step-img-art" style="display:none;">
+          <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg">
+            <rect width="480" height="270" fill="#130020"/>
+            <!-- Top header bar -->
+            <rect x="0" y="0" width="480" height="32" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="12" y="20" font-family="Inter" font-size="8" font-weight="600" fill="#FFF0F8">🛸 LIVE GPS OUTING MODE</text>
+            <text x="170" y="20" font-family="Inter" font-size="7" fill="#8A6A90">• GPS Simulation (Click to update)</text>
+            <text x="360" y="20" font-family="Inter" font-size="7" fill="#C8A8CC">✕ Exit Live Navigation</text>
+            <text x="12" y="30" font-family="Inter" font-size="7" fill="#FF6B9D">Leg 1 of 4: Wild Garden Cafe at Amethyst</text>
+            <!-- Traffic banner -->
+            <rect x="10" y="38" width="270" height="16" rx="4" fill="#0f3" opacity="0.15" stroke="#4ADE80" stroke-width="0.5"/>
+            <text x="18" y="49" font-family="Inter" font-size="6" fill="#4ADE80">✓ Smooth traffic via Google Maps Live Matrix  •  Route via GST/Pondy Bazaar</text>
+            <!-- Map area -->
+            <rect x="10" y="60" width="270" height="152" rx="6" fill="#0f1726"/>
+            <!-- Map roads -->
+            <g stroke="#1e2d4a" stroke-width="3"><line x1="10" y1="100" x2="280" y2="100"/><line x1="10" y1="130" x2="280" y2="130"/><line x1="10" y1="160" x2="280" y2="160"/><line x1="70" y1="60" x2="70" y2="212"/><line x1="140" y1="60" x2="140" y2="212"/><line x1="220" y1="60" x2="220" y2="212"/></g>
+            <!-- Route line -->
+            <line x1="90" y1="150" x2="220" y2="90" stroke="#9B1DFF" stroke-width="2" stroke-dasharray="6 3"/>
+            <!-- Current location -->
+            <circle cx="90" cy="150" r="8" fill="#00d4ff" opacity="0.9"/>
+            <circle cx="90" cy="150" r="14" fill="#00d4ff" opacity="0.2"/>
+            <!-- Destination -->
+            <circle cx="220" cy="90" r="10" fill="#FF2D78"/>
+            <text x="220" y="93" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">1</text>
+            <!-- Legend -->
+            <circle cx="16" cy="220" r="5" fill="#00d4ff"/>
+            <text x="24" y="223" font-family="Inter" font-size="6" fill="#8A6A90">You Are Here</text>
+            <circle cx="90" cy="220" r="5" fill="#FF2D78"/>
+            <text x="98" y="223" font-family="Inter" font-size="6" fill="#8A6A90">Itinerary Stops</text>
+            <!-- Map stats row -->
+            <rect x="10" y="216" width="270" height="24" rx="0" fill="#0D0018"/>
+            <text x="18" y="230" font-family="Inter" font-size="6.5" fill="#8A6A90">TARGET SPOT</text>
+            <text x="18" y="238" font-family="Inter" font-size="7" fill="#FF6B9D" font-weight="600">Wild Garden Cafe at Amethyst</text>
+            <text x="130" y="230" font-family="Inter" font-size="6.5" fill="#8A6A90">PREDICTED ETA</text>
+            <text x="130" y="238" font-family="Inter" font-size="7.5" font-weight="700" fill="#FFF0F8">4:09 PM</text>
+            <text x="200" y="230" font-family="Inter" font-size="6.5" fill="#8A6A90">LEAVE BY</text>
+            <text x="200" y="238" font-family="Inter" font-size="7.5" font-weight="700" fill="#FFF0F8">5:24 PM</text>
+            <!-- Right panel -->
+            <rect x="290" y="38" width="182" height="202" rx="6" fill="#1A002E" stroke="#3D1060" stroke-width="0.8"/>
+            <text x="302" y="56" font-family="Inter" font-size="8" font-weight="600" fill="#FFF0F8">⚡ LIVE ACTION CONTROLS</text>
+            <text x="430" y="56" font-family="Inter" font-size="6" fill="#8A6A90" text-anchor="end">Plan: 5hrs</text>
+            <!-- En route card -->
+            <rect x="300" y="62" width="164" height="58" rx="5" fill="#0D0018" stroke="#3D1060" stroke-width="0.5"/>
+            <text x="310" y="76" font-family="Inter" font-size="6" fill="#8A6A90">En Route to Destination</text>
+            <text x="420" y="76" font-family="Inter" font-size="7" fill="#4ADE80" text-anchor="end">~9 Mins Drive</text>
+            <text x="310" y="88" font-family="Inter" font-size="8" font-weight="700" fill="#FFF0F8">Wild Garden Cafe</text>
+            <text x="310" y="99" font-family="Inter" font-size="6.5" fill="#8A6A90">Royapettah • cafe</text>
+            <text x="310" y="111" font-family="Inter" font-size="6" fill="#C8A8CC">Click "Reached" when you arrive at the venue</text>
+            <!-- Reached button -->
+            <rect x="300" y="128" width="164" height="22" rx="11" fill="url(#vg1)"/>
+            <text x="382" y="143" text-anchor="middle" font-family="Inter" font-size="8" font-weight="600" fill="#fff">⊙ Reached!</text>
+            <!-- Route steps -->
+            <text x="302" y="166" font-family="Inter" font-size="7" fill="#8A6A90">OUTING ROUTE STEPS</text>
+            <!-- Step items -->
+            <rect x="300" y="172" width="164" height="18" rx="3" fill="#FF2D78" opacity="0.2"/>
+            <circle cx="310" cy="181" r="5" fill="#FF2D78"/>
+            <text x="310" y="184" text-anchor="middle" font-size="5" fill="#fff">1</text>
+            <text x="320" y="179" font-family="Inter" font-size="7" font-weight="600" fill="#FFF0F8">Wild Garden Cafe</text>
+            <text x="440" y="179" font-family="Inter" font-size="6" fill="#FF6B9D" text-anchor="end">4:09 PM</text>
+            <circle cx="310" cy="200" r="5" fill="#3D1060"/>
+            <text x="310" y="203" text-anchor="middle" font-size="5" fill="#C8A8CC">2</text>
+            <text x="320" y="198" font-family="Inter" font-size="7" fill="#8A6A90">Sathyam Cinemas</text>
+            <text x="440" y="198" font-family="Inter" font-size="6" fill="#8A6A90" text-anchor="end">5:29 PM</text>
+            <circle cx="310" cy="218" r="5" fill="#3D1060"/>
+            <text x="310" y="221" text-anchor="middle" font-size="5" fill="#C8A8CC">3</text>
+            <text x="320" y="216" font-family="Inter" font-size="7" fill="#8A6A90">Zara's Pizzeria</text>
+            <text x="440" y="216" font-family="Inter" font-size="6" fill="#8A6A90" text-anchor="end">8:12 PM</text>
+            <circle cx="310" cy="233" r="5" fill="#3D1060"/>
+            <text x="310" y="236" text-anchor="middle" font-size="5" fill="#C8A8CC">4</text>
+            <text x="320" y="231" font-family="Inter" font-size="7" fill="#8A6A90">Sandy's Chocolate Lab</text>
+            <text x="440" y="231" font-family="Inter" font-size="6" fill="#8A6A90" text-anchor="end">9:27 PM</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ─── TECH STACK ─── -->
+  <section class="tech-section reveal">
+    <div class="section-label" style="justify-content:center; text-align:center;">03 / TECH STACK</div>
+    <h2 class="section-title-lg">Built With</h2>
+    <div class="tech-grid">
+      <span class="tech-pill">HTML5 / CSS3</span>
+      <span class="tech-pill">Vanilla JavaScript</span>
+      <span class="tech-pill">Leaflet.js (Maps)</span>
+      <span class="tech-pill">Google Maps Distance Matrix API</span>
+      <span class="tech-pill">Geolocation API</span>
+      <span class="tech-pill">AI Itinerary Engine</span>
+      <span class="tech-pill">Budget Optimization Logic</span>
+      <span class="tech-pill">JSON Data Layer</span>
+      <span class="tech-pill">Responsive Design</span>
+      <span class="tech-pill">GPS Simulation Mode</span>
+    </div>
+  </section>
+
+  <!-- ─── STATUS / UNDER BUILD ─── -->
+  <section class="status-section reveal">
+    <div class="section-label" style="justify-content:center;">04 / PROJECT STATUS</div>
+    <div class="status-card">
+      <div class="status-icon">🚧</div>
+      <h2 class="status-title">Still Being Built</h2>
+      <p class="status-desc">
+        VAZI is an evolving idea, currently in its <strong style="color:var(--pink3);">Chennai MVP phase</strong>. The core itinerary engine, interactive map, venue cards, and live GPS navigation are functional — but the platform is far from its final vision. Many features are still being designed, built, and refined.
+      </p>
+      <p class="status-desc" style="margin-bottom:0;">
+        Planned upcoming features include: multi-city support, user accounts with full outing history, social sharing, venue rating system, ML-based personalization from past outings, and a mobile-first native PWA experience.
+      </p>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>MVP Progress</span>
+          <span>~55% Complete</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 55%;"></div>
+        </div>
+      </div>
+      <div class="progress-wrap" style="margin-top:0;">
+        <div class="progress-label">
+          <span>Feature Coverage</span>
+          <span>Core Features Done</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 40%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CTA ─── -->
+  <section class="cta-footer reveal">
+    <div class="section-label" style="justify-content:center;">05 / EXPLORE MORE</div>
+    <h2 class="section-title-lg">Interested in VAZI?</h2>
+    <p style="color:var(--dim); max-width:500px; margin:0 auto; line-height:1.7; font-size:0.95rem;">
+      This is still an idea being shaped into reality. Got feedback, a feature suggestion, or want to collaborate? Reach out — every interesting conversation helps VAZI get better.
+    </p>
+    <div class="cta-btns">
+      <a href="https://github.com/SSDV19" target="_blank" rel="noopener" class="btn btn-primary">View GitHub Profile →</a>
+      <a href="index.html#contact" class="btn btn-ghost">Get in Touch</a>
+      <a href="index.html#projects" class="btn btn-ghost">← All Projects</a>
+    </div>
+  </section>
+
+</div><!-- /page-wrap -->
+
+<!-- Footer -->
+<footer style="text-align:center; padding:32px; border-top:1px solid rgba(255,45,120,0.1); font-family:var(--mono); font-size:11px; color:var(--muted); position:relative; z-index:2;">
+  VAZI — AI Outing Platform &nbsp;|&nbsp; Part of Sri Sai Darshan Vel V's Portfolio &nbsp;|&nbsp; 🚧 Under Active Development
+</footer>
+
+<script>
+  // ─── REVEAL ON SCROLL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // ─── EMOJI RANDOMIZE POSITIONS SLIGHTLY ───
+  document.querySelectorAll('.emoji-float').forEach(el => {
+    el.style.left = (parseFloat(el.style.left || el.className.match(/e\d+/) && 0)) + '%';
+    // Add slight random offset to x position to make it feel natural
+    const baseLeft = parseFloat(getComputedStyle(el).left);
+    el.style.animationDelay = (Math.random() * 20) + 's';
+  });
+</script>
+
+</body>
+</html>
