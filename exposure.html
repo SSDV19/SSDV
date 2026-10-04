@@ -219,6 +219,7 @@
     font-family:var(--mono); font-size:11px; letter-spacing:0.1em;
     color:var(--sky); text-transform:uppercase;
     border:1px solid var(--sky-dim); padding:5px 12px;
+    border-radius:999px;
   }
 
   /* ============================================
@@ -236,7 +237,7 @@
     font-family:var(--mono); font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
     color:var(--sky); display:flex; align-items:center; gap:10px; margin-bottom:18px;
   }
-  .phero-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block;}
+  .phero-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block; border-radius:50%;}
   .phero h1{
     font-family:var(--display); font-weight:700;
     font-size:clamp(42px,7vw,82px); line-height:1.02; letter-spacing:-0.015em;
@@ -263,7 +264,7 @@
     color:var(--sky); display:flex; align-items:center; gap:10px; margin-bottom:48px;
     border-bottom:1px solid var(--hair); padding-bottom:18px;
   }
-  .events-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block;}
+  .events-eyebrow::before{content:''; width:6px; height:6px; background:var(--sky); display:inline-block; border-radius:50%;}
 
   /* ---- SINGLE EVENT CARD ---- */
   .event-card{
@@ -285,7 +286,7 @@
     max-height:400px;
     width:auto; height:auto;
     object-fit:contain;
-    border-radius:20px;
+    border-radius:24px;
     border:1px solid var(--hair-strong);
     background:var(--card);
     box-shadow:0 24px 60px -20px rgba(6,12,24,0.8), 0 0 0 1px rgba(91,168,214,0.12);
@@ -306,7 +307,7 @@
     display:inline-flex; align-items:center; gap:7px;
     font-family:var(--mono); font-size:12px; letter-spacing:0.04em;
     color:var(--sky); border:1px solid var(--sky-dim); background:rgba(91,168,214,0.09);
-    padding:5px 12px; margin-bottom:16px;
+    padding:5px 14px; margin-bottom:16px; border-radius:999px;
   }
   .event-desc{
     font-size:15.5px; color:var(--paper-dim); line-height:1.75; max-width:52ch;
@@ -315,14 +316,15 @@
   .event-tags{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px;}
   .event-tag{
     font-family:var(--mono); font-size:11px; letter-spacing:0.04em;
-    color:var(--paper-dim); border:1px solid var(--hair-strong); padding:4px 10px;
+    color:var(--paper-dim); border:1px solid var(--hair-strong); padding:5px 12px;
+    border-radius:999px;
   }
 
   /* buttons */
   .btn{
-    font-family:var(--mono); font-size:13px; letter-spacing:0.04em; padding:14px 26px;
+    font-family:var(--mono); font-size:13px; letter-spacing:0.04em; padding:14px 28px;
     text-decoration:none; display:inline-flex; align-items:center; gap:10px;
-    transition:all 0.25s; border:1px solid var(--hair-strong);
+    transition:all 0.25s; border:1px solid var(--hair-strong); border-radius:999px;
   }
   .btn-sky{background:var(--sky); color:var(--ink); border-color:var(--sky); font-weight:600;}
   .btn-sky:hover{background:var(--sky-bright); transform:translateY(-2px); box-shadow:0 8px 24px -8px rgba(91,168,214,0.45);}
@@ -349,6 +351,8 @@
     padding:40px;
     display:inline-block;
     min-width:320px;
+    border-radius:24px;
+    background:rgba(15,26,53,0.4);
   }
   .more-soon-inner p{
     font-family:var(--mono); font-size:13px; letter-spacing:0.06em;
@@ -380,13 +384,13 @@
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.05em;
-    padding: 6px 12px;
+    padding: 6px 14px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     transition: all 0.25s;
-    border-radius: 4px;
+    border-radius: 999px;
   }
   .audio-toggle:hover {
     color: var(--sky-bright);

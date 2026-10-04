@@ -245,9 +245,21 @@
   .hero-tagline b{ color:var(--paper); font-weight:600; }
   .hero-meta{
     display:flex;
-    gap:40px;
-    margin-top:56px;
+    gap:18px;
+    margin-top:40px;
     flex-wrap:wrap;
+  }
+  .meta-item{
+    background:rgba(242,240,230,0.03);
+    border:1px solid var(--hair);
+    border-radius:16px;
+    padding:12px 20px;
+    min-width:140px;
+    transition:border-color 0.25s, transform 0.25s;
+  }
+  .meta-item:hover{
+    border-color:var(--trace-dim);
+    transform:translateY(-2px);
   }
   .meta-item dt{
     font-family:var(--mono);
@@ -259,12 +271,172 @@
   }
   .meta-item dd{
     font-family:var(--display);
-    font-size:22px;
+    font-size:20px;
     font-weight:600;
     color:var(--paper);
   }
+
+  /* ===== Spoken Languages Section below CGPA ===== */
+  .languages-block{
+    margin-top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:relative;
+  }
+  .languages-label{
+    font-family:var(--mono);
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--trace);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:600;
+  }
+  .lang-dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:var(--trace);
+    display:inline-block;
+    animation: pulse-dot 1.5s infinite alternate;
+  }
+  .languages-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:14px;
+    max-width: 580px;
+  }
+  @media(max-width:640px){
+    .languages-grid{
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .lang-box{
+    position:relative;
+    height:86px;
+    border-radius:18px;
+    cursor:pointer;
+    outline:none;
+    transition:transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s;
+    border:1px solid var(--hair-strong);
+    background:var(--card);
+  }
+  .lang-box:hover, .lang-box:focus{
+    transform:translateY(-5px);
+    border-color:var(--trace);
+    box-shadow:0 14px 28px -8px rgba(0,0,0,0.75), 0 0 16px rgba(74,222,128,0.22);
+  }
+  .lang-box-inner{
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius:18px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:10px 12px;
+  }
+  .lang-bg-svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+    pointer-events:none;
+    transition:transform 0.4s ease;
+  }
+  .lang-box:hover .lang-bg-svg{
+    transform:scale(1.08);
+  }
+  .lang-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+  }
+  .lang-origin-tag{
+    font-family:var(--mono);
+    font-size:8.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:rgba(255,255,255,0.7);
+  }
+  .lang-native-text{
+    font-family:var(--display);
+    font-size:18px;
+    font-weight:700;
+    color:#FFFFFF;
+    text-shadow:0 2px 8px rgba(0,0,0,0.9);
+    letter-spacing:0.02em;
+  }
+  /* Floating Popover on hover/focus */
+  .lang-popover{
+    position:absolute;
+    bottom:calc(100% + 12px);
+    left:50%;
+    transform:translateX(-50%) translateY(8px) scale(0.94);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1);
+    z-index:90;
+    width:165px;
+    padding:11px 13px;
+    background:rgba(17,23,18,0.96);
+    border:1px solid var(--trace);
+    border-radius:14px;
+    box-shadow:0 14px 35px rgba(0,0,0,0.85), 0 0 16px rgba(74,222,128,0.22);
+    backdrop-filter:blur(12px);
+    text-align:left;
+  }
+  .lang-box:hover .lang-popover, .lang-box:focus .lang-popover, .lang-box:focus-within .lang-popover{
+    opacity:1;
+    transform:translateX(-50%) translateY(0) scale(1);
+    pointer-events:auto;
+  }
+  .popover-arrow{
+    position:absolute;
+    bottom:-6px;
+    left:50%;
+    width:10px;
+    height:10px;
+    background:rgba(17,23,18,0.96);
+    border-right:1px solid var(--trace);
+    border-bottom:1px solid var(--trace);
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .popover-title{
+    font-family:var(--display);
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--paper);
+    margin-bottom:4px;
+  }
+  .popover-badge{
+    font-family:var(--mono);
+    font-size:9.5px;
+    font-weight:600;
+    padding:3px 8px;
+    border-radius:999px;
+    display:inline-block;
+    margin-bottom:4px;
+  }
+  .popover-badge.native{ background:rgba(245,158,11,0.2); color:#FBBF24; border:1px solid rgba(245,158,11,0.4); }
+  .popover-badge.fluent{ background:rgba(59,130,246,0.2); color:#93C5FD; border:1px solid rgba(59,130,246,0.4); }
+  .popover-badge.basic{ background:rgba(249,115,22,0.2); color:#FDBA74; border:1px solid rgba(249,115,22,0.4); }
+  .popover-badge.n4{ background:rgba(236,72,153,0.2); color:#F472B6; border:1px solid rgba(236,72,153,0.4); }
+  .popover-sub{
+    font-family:var(--mono);
+    font-size:9px;
+    color:var(--steel);
+    line-height:1.3;
+  }
+
   .hero-cta{
-    margin-top:52px;
+    margin-top:36px;
     display:flex;
     gap:18px;
     flex-wrap:wrap;
@@ -273,13 +445,14 @@
     font-family:var(--mono);
     font-size:13px;
     letter-spacing:0.04em;
-    padding:15px 28px;
+    padding:14px 28px;
     text-decoration:none;
     display:inline-flex;
     align-items:center;
     gap:10px;
     transition:all 0.25s;
     border:1px solid var(--hair-strong);
+    border-radius:999px;
   }
   .btn-primary{
     background:var(--trace);
@@ -287,12 +460,12 @@
     border-color:var(--trace);
     font-weight:600;
   }
-  .btn-primary:hover{ background:#67e895; transform:translateY(-2px); }
+  .btn-primary:hover{ background:#67e895; transform:translateY(-2px); box-shadow:0 8px 24px -6px rgba(74,222,128,0.4); }
   .btn-ghost{
     color:var(--paper);
     background:transparent;
   }
-  .btn-ghost:hover{ border-color:var(--trace); color:var(--trace); }
+  .btn-ghost:hover{ border-color:var(--trace); color:var(--trace); transform:translateY(-2px); }
 
   /* scroll cue */
   .scroll-cue{
@@ -338,8 +511,58 @@
     margin-top:14px;
     border:1px solid var(--hair-strong);
     background:var(--card);
+    border-radius:24px;
     overflow:hidden;
+    position:relative;
+    transition:border-color 0.3s, box-shadow 0.3s;
   }
+  .exposure-hero:hover{
+    border-color:var(--trace-dim);
+    box-shadow:0 20px 50px -15px rgba(0,0,0,0.7), 0 0 24px rgba(74,222,128,0.15);
+  }
+  .exposure-floating-travel{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:2;
+  }
+  .flight-emoji{
+    position:absolute;
+    user-select:none;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+    will-change:transform, opacity;
+  }
+  .fe-1{ font-size:26px; top:14%; left:8%; animation: floatDrift1 14s ease-in-out infinite; opacity:0.85; }
+  .fe-2{ font-size:22px; top:72%; left:22%; animation: floatDrift2 18s ease-in-out infinite; opacity:0.8; }
+  .fe-3{ font-size:20px; top:18%; left:40%; animation: floatDrift3 16s ease-in-out infinite; opacity:0.75; }
+  .fe-4{ font-size:24px; top:74%; left:46%; animation: floatDrift1 20s ease-in-out infinite reverse; opacity:0.85; }
+  .fe-5{ font-size:18px; top:12%; left:60%; animation: floatDrift2 15s ease-in-out infinite; opacity:0.75; }
+  .fe-6{ font-size:20px; top:58%; left:5%; animation: floatDrift3 22s ease-in-out infinite; opacity:0.7; }
+  .fe-7{ font-size:20px; top:84%; left:34%; animation: floatDrift1 17s ease-in-out infinite; opacity:0.75; }
+  .fe-8{ font-size:22px; top:28%; left:56%; animation: floatDrift2 19s ease-in-out infinite reverse; opacity:0.75; }
+  .fe-9{ font-size:22px; top:42%; left:28%; animation: floatDrift3 13s ease-in-out infinite; opacity:0.8; }
+  .fe-10{ font-size:20px; top:12%; left:84%; animation: floatDrift1 21s ease-in-out infinite; opacity:0.85; }
+
+  @keyframes floatDrift1{
+    0%{ transform: translate(0, 0) rotate(0deg); }
+    25%{ transform: translate(18px, -14px) rotate(6deg); }
+    50%{ transform: translate(-10px, -24px) rotate(-4deg); }
+    75%{ transform: translate(-22px, -8px) rotate(3deg); }
+    100%{ transform: translate(0, 0) rotate(0deg); }
+  }
+  @keyframes floatDrift2{
+    0%{ transform: translate(0, 0) rotate(0deg) scale(1); }
+    33%{ transform: translate(-24px, 16px) rotate(-8deg) scale(1.08); }
+    66%{ transform: translate(16px, -18px) rotate(7deg) scale(0.95); }
+    100%{ transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
+  @keyframes floatDrift3{
+    0%{ transform: translate(0, 0) rotate(0deg); }
+    50%{ transform: translate(25px, 20px) rotate(12deg); }
+    100%{ transform: translate(0, 0) rotate(0deg); }
+  }
+
   .exposure-text{
     flex:1 1 58%;
     min-width:260px;
@@ -348,6 +571,8 @@
     flex-direction:column;
     justify-content:center;
     border-right:1px solid var(--hair-strong);
+    position:relative;
+    z-index:3;
   }
   .exposure-photo{
     flex:0 0 220px;
@@ -355,6 +580,7 @@
     position:relative;
     overflow:hidden;
     background:var(--surface);
+    z-index:3;
   }
   .exposure-photo img{
     position:absolute;
@@ -375,7 +601,8 @@
     color:var(--trace);
     border:1px solid var(--trace-dim);
     background:rgba(74,222,128,0.07);
-    padding:7px 14px;
+    padding:7px 16px;
+    border-radius:999px;
     margin-bottom:22px;
   }
   .exposure-title{ font-size:clamp(28px,4vw,46px) !important; line-height:1.06; }
@@ -445,12 +672,20 @@
     border:1px solid var(--hair-strong);
     background:var(--card);
     padding:0;
+    border-radius:24px;
     overflow:hidden;
+    transition:border-color 0.3s, box-shadow 0.3s;
+  }
+  .id-card:hover{
+    border-color:var(--trace-dim);
+    box-shadow:0 18px 45px -12px rgba(0,0,0,0.65);
   }
   .id-card-head{
     display:flex; gap:18px; align-items:center;
     padding:24px;
     border-bottom:1px solid var(--hair);
+    border-top-left-radius:24px;
+    border-top-right-radius:24px;
   }
   .id-photo{
     width:64px; height:64px;
@@ -535,16 +770,24 @@
   .proj-card{
     border:1px solid var(--hair-strong);
     background:var(--card);
+    border-radius:22px;
+    overflow:hidden;
     display:flex;
     flex-direction:column;
-    transition:transform 0.3s, border-color 0.3s;
+    transition:transform 0.3s, border-color 0.3s, box-shadow 0.3s;
   }
-  .proj-card:hover{ transform:translateY(-6px); border-color:var(--trace); }
+  .proj-card:hover{
+    transform:translateY(-6px);
+    border-color:var(--trace);
+    box-shadow:0 18px 40px -15px rgba(0,0,0,0.65), 0 0 20px rgba(74,222,128,0.15);
+  }
   .proj-art{
     height:160px;
     position:relative;
     background:var(--surface);
     border-bottom:1px solid var(--hair);
+    border-top-left-radius:22px;
+    border-top-right-radius:22px;
     overflow:hidden;
   }
   .proj-art svg{ width:100%; height:100%; }
@@ -556,8 +799,10 @@
     background:var(--ink);
     border:1px solid var(--trace-dim);
     color:var(--trace);
-    padding:4px 9px;
+    padding:5px 12px;
+    border-radius:999px;
     text-transform:uppercase;
+    z-index:2;
   }
   .proj-body{ padding:22px; flex:1; display:flex; flex-direction:column; }
   .proj-body h3{
@@ -581,8 +826,11 @@
     font-size:10.5px;
     color:var(--steel);
     border:1px solid var(--hair);
-    padding:4px 8px;
+    border-radius:999px;
+    padding:4px 10px;
+    transition:border-color 0.2s, color 0.2s;
   }
+  .chip:hover{ border-color:var(--trace); color:var(--paper); }
 
   /* signature project styling */
   .proj-signature{
@@ -600,7 +848,8 @@
     color:#FFD166;
     border:1px solid rgba(255,209,102,0.4);
     background:rgba(255,209,102,0.08);
-    padding:4px 10px;
+    padding:5px 12px;
+    border-radius:999px;
     margin-bottom:12px;
     align-self:flex-start;
   }
@@ -620,14 +869,15 @@
     color:#FF9A7A;
     border:1px solid rgba(255,107,74,0.45);
     background:rgba(255,107,74,0.10);
-    padding:4px 10px;
+    padding:5px 12px;
+    border-radius:999px;
     margin-bottom:12px;
     align-self:flex-start;
   }
   .proj-learn-more{
     margin-top:18px;
     align-self:flex-start;
-    padding:11px 20px;
+    padding:11px 22px;
     font-size:12px;
   }
   .new-idea-badge{
@@ -640,10 +890,10 @@
     color:#FF6B9D;
     border:1px solid rgba(255,45,120,0.5);
     background:rgba(155,29,255,0.12);
-    padding:4px 10px;
+    padding:5px 12px;
     margin-bottom:12px;
     align-self:flex-start;
-    border-radius:2px;
+    border-radius:999px;
     box-shadow:0 0 10px rgba(255,45,120,0.15);
   }
 
@@ -674,12 +924,18 @@
     font-weight:500;
     color:var(--paper);
     border:1px solid var(--hair-strong);
-    padding:8px 16px;
+    border-radius:999px;
+    padding:8px 18px;
     background:var(--card);
     position:relative;
-    transition:border-color 0.25s, color 0.25s;
+    transition:border-color 0.25s, color 0.25s, transform 0.2s, box-shadow 0.2s;
   }
-  .skill-pill:hover{ border-color:var(--trace); color:var(--trace); }
+  .skill-pill:hover{
+    border-color:var(--trace);
+    color:var(--trace);
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(74,222,128,0.18);
+  }
 
   /* ===== certifications ===== */
   .cert-grid{
@@ -688,13 +944,19 @@
     gap:1px;
     background:var(--hair);
     border:1px solid var(--hair-strong);
+    border-radius:24px;
+    overflow:hidden;
   }
   .cert-item{
     background:var(--ink);
-    padding:22px 24px;
+    padding:24px 26px;
     display:flex;
     flex-direction:column;
     gap:8px;
+    transition:background 0.25s;
+  }
+  .cert-item:hover{
+    background:var(--card);
   }
   .cert-num{
     font-family:var(--mono);
@@ -721,8 +983,17 @@
   }
   @media (max-width:860px){ .vol-grid{ grid-template-columns:1fr; } }
   .vol-card{
-    border-left:2px solid var(--trace-dim);
-    padding:4px 0 4px 22px;
+    border:1px solid var(--hair);
+    border-left:3px solid var(--trace);
+    background:var(--card);
+    border-radius:18px;
+    padding:20px 24px;
+    transition:transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .vol-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--trace-dim);
+    box-shadow:0 12px 30px -10px rgba(0,0,0,0.6);
   }
   .vol-role{
     font-family:var(--display);
@@ -752,8 +1023,14 @@
     border:1px solid var(--hair-strong);
     padding:60px;
     background:var(--card);
+    border-radius:26px;
     position:relative;
     overflow:hidden;
+    transition:border-color 0.3s, box-shadow 0.3s;
+  }
+  .contact-box:hover{
+    border-color:var(--trace-dim);
+    box-shadow:0 24px 60px -15px rgba(0,0,0,0.7);
   }
   @media (max-width:700px){ .contact-box{ padding:36px 26px; } }
   .contact-box h2{
@@ -859,7 +1136,7 @@
     background: rgba(17, 23, 18, 0.7);
     backdrop-filter: blur(8px);
     box-shadow: 0 18px 45px -15px rgba(0,0,0,0.85), 0 0 1px 1px rgba(74,222,128,0.1) inset;
-    border-radius: 6px;
+    border-radius: 20px;
     overflow: hidden;
     font-family: var(--mono);
     display: flex;
@@ -1020,13 +1297,13 @@
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.05em;
-    padding: 6px 12px;
+    padding: 7px 16px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 6px;
     transition: all 0.25s;
-    border-radius: 4px;
+    border-radius: 999px;
   }
   .audio-toggle:hover {
     color: var(--trace);
@@ -1049,6 +1326,7 @@
     flex-direction: column;
     justify-content: space-between;
     user-select: none;
+    border-radius: 18px;
   }
   .seats-grid {
     display: grid;
@@ -1063,7 +1341,7 @@
     height: 22px;
     background: transparent;
     border: 1px solid var(--hair-strong);
-    border-radius: 4px;
+    border-radius: 7px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -1202,8 +1480,8 @@
     <div class="hero-container">
       <div class="hero-left">
         <div class="hero-id">SYSTEM ID: <span>SRI_SAI_DARSHAN_VEL_V.exe</span> — RUNNING</div>
-        <h1 class="hero-name glitch-hover" data-text="I build the systems behind the signal.">I build the systems<br>behind the signal.</h1>
-        <p class="hero-tagline">CS undergraduate at J.N.N Institute of Engineering. I ship <b>hardware-to-cloud systems</b> — from a robotic health monitor that pings hospitals, to a civic engine running on 15+ AWS services, to the UI that drives an EV charging pod.</p>
+        <h1 class="hero-name glitch-hover" data-text="I make ideas hard to ignore.">I make ideas<br>hard to ignore.</h1>
+        <p class="hero-tagline">CS undergraduate at J.N.N Institute of Engineering. I’m a curious builder who enjoys crossing the line between “what if?” and “it works.” Hardware, software, systems, experiments — if it teaches me something, I’m probably building it.</p>
 
         <dl class="hero-meta">
           <div class="meta-item">
@@ -1219,6 +1497,183 @@
             <dd>Chennai, IN</dd>
           </div>
         </dl>
+
+        <!-- Languages Section below CGPA -->
+        <div class="languages-block">
+          <div class="languages-label">
+            <span class="lang-dot"></span>
+            <span>Languages</span>
+          </div>
+          <div class="languages-grid">
+            <!-- Tamil -->
+            <div class="lang-box" tabindex="0">
+              <div class="lang-box-inner">
+                <svg class="lang-bg-svg" viewBox="0 0 140 86" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="tamil-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#241400"/>
+                      <stop offset="50%" stop-color="#3D1E03"/>
+                      <stop offset="100%" stop-color="#140A00"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="140" height="86" fill="url(#tamil-bg)"/>
+                  <!-- Tamil Nadu Temple Gopuram Silhouette & Sun Rays -->
+                  <g fill="#F59E0B" opacity="0.28">
+                    <polygon points="70,10 62,28 78,28"/>
+                    <rect x="58" y="28" width="24" height="6" rx="1"/>
+                    <polygon points="54,34 86,34 89,50 51,50"/>
+                    <rect x="47" y="50" width="46" height="6" rx="1"/>
+                    <polygon points="43,56 97,56 101,76 39,76"/>
+                    <rect x="33" y="76" width="74" height="10"/>
+                    <path d="M 63,86 A 7,7 0 0 1 77,86 Z" fill="#140A00"/>
+                  </g>
+                  <g stroke="#F59E0B" stroke-width="0.75" opacity="0.25">
+                    <line x1="70" y1="10" x2="15" y2="45"/>
+                    <line x1="70" y1="10" x2="125" y2="45"/>
+                    <line x1="70" y1="10" x2="30" y2="20"/>
+                    <line x1="70" y1="10" x2="110" y2="20"/>
+                  </g>
+                </svg>
+                <div class="lang-content">
+                  <div class="lang-origin-tag">Tamil</div>
+                  <div class="lang-native-text">தமிழ்</div>
+                </div>
+              </div>
+              <div class="lang-popover" role="tooltip">
+                <div class="popover-arrow"></div>
+                <div class="popover-title">Tamil</div>
+                <div class="popover-badge native">Native</div>
+                <div class="popover-sub">Mother Tongue · Tamil Nadu, India</div>
+              </div>
+            </div>
+
+            <!-- English -->
+            <div class="lang-box" tabindex="0">
+              <div class="lang-box-inner">
+                <svg class="lang-bg-svg" viewBox="0 0 140 86" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="english-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#08142C"/>
+                      <stop offset="50%" stop-color="#112248"/>
+                      <stop offset="100%" stop-color="#050C1B"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="140" height="86" fill="url(#english-bg)"/>
+                  <!-- London Big Ben & Parliament Silhouette -->
+                  <g fill="#60A5FA" opacity="0.28">
+                    <polygon points="105,8 102,22 108,22"/>
+                    <rect x="100" y="22" width="10" height="14" rx="1"/>
+                    <circle cx="105" cy="29" r="2.5" fill="#E2E8F0" opacity="0.7"/>
+                    <rect x="99" y="36" width="12" height="50"/>
+                    <rect x="42" y="55" width="58" height="31"/>
+                    <polygon points="48,55 53,40 58,55"/>
+                    <polygon points="68,55 73,40 78,55"/>
+                    <polygon points="86,55 91,40 96,55"/>
+                    <path d="M 8,86 Q 25,66 42,86 Z" fill="#050C1B"/>
+                  </g>
+                  <g stroke="#EF4444" stroke-width="0.8" opacity="0.22">
+                    <line x1="0" y1="0" x2="140" y2="86"/>
+                    <line x1="0" y1="86" x2="140" y2="0"/>
+                  </g>
+                </svg>
+                <div class="lang-content">
+                  <div class="lang-origin-tag">English</div>
+                  <div class="lang-native-text">English</div>
+                </div>
+              </div>
+              <div class="lang-popover" role="tooltip">
+                <div class="popover-arrow"></div>
+                <div class="popover-title">English</div>
+                <div class="popover-badge fluent">Fluent</div>
+                <div class="popover-sub">Professional &amp; Academic · England, UK</div>
+              </div>
+            </div>
+
+            <!-- Hindi -->
+            <div class="lang-box" tabindex="0">
+              <div class="lang-box-inner">
+                <svg class="lang-bg-svg" viewBox="0 0 140 86" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="hindi-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#260E06"/>
+                      <stop offset="50%" stop-color="#42190A"/>
+                      <stop offset="100%" stop-color="#140702"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="140" height="86" fill="url(#hindi-bg)"/>
+                  <!-- Red Fort & Indian Heritage Arch Silhouette -->
+                  <g fill="#FB923C" opacity="0.3">
+                    <rect x="26" y="22" width="6" height="64"/>
+                    <polygon points="29,14 24,22 34,22"/>
+                    <rect x="108" y="22" width="6" height="64"/>
+                    <polygon points="111,14 106,22 116,22"/>
+                    <path d="M 58,32 Q 70,18 82,32 Z"/>
+                    <polygon points="70,14 68,20 72,20"/>
+                    <rect x="30" y="32" width="80" height="54"/>
+                    <path d="M 58,86 C 58,58 82,58 82,86 Z" fill="#140702"/>
+                  </g>
+                  <g stroke="#FB923C" stroke-width="0.8" opacity="0.3" fill="none">
+                    <path d="M 64,68 Q 70,58 76,68"/>
+                  </g>
+                </svg>
+                <div class="lang-content">
+                  <div class="lang-origin-tag">Hindi</div>
+                  <div class="lang-native-text">हिन्दी</div>
+                </div>
+              </div>
+              <div class="lang-popover" role="tooltip">
+                <div class="popover-arrow"></div>
+                <div class="popover-title">Hindi</div>
+                <div class="popover-badge basic">Basic</div>
+                <div class="popover-sub">Conversational Understanding · India</div>
+              </div>
+            </div>
+
+            <!-- Japanese -->
+            <div class="lang-box" tabindex="0">
+              <div class="lang-box-inner">
+                <svg class="lang-bg-svg" viewBox="0 0 140 86" preserveAspectRatio="none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="jp-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#1B0820"/>
+                      <stop offset="50%" stop-color="#2D1136"/>
+                      <stop offset="100%" stop-color="#0E0312"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="140" height="86" fill="url(#jp-bg)"/>
+                  <!-- Rising Sun & Mount Fuji Silhouette -->
+                  <circle cx="70" cy="36" r="22" fill="#E11D48" opacity="0.35"/>
+                  <polygon points="70,20 22,86 118,86" fill="#3B1D48" opacity="0.65"/>
+                  <polygon points="70,20 54,42 62,38 70,43 78,38 86,42" fill="#F1F5F9" opacity="0.6"/>
+                  <!-- Torii Gate Silhouette -->
+                  <g fill="#F43F5E" opacity="0.5">
+                    <rect x="92" y="50" width="30" height="3" rx="0.5"/>
+                    <rect x="95" y="55" width="24" height="2"/>
+                    <rect x="98" y="50" width="3" height="36"/>
+                    <rect x="113" y="50" width="3" height="36"/>
+                  </g>
+                  <!-- Sakura Petals -->
+                  <g fill="#F472B6" opacity="0.6">
+                    <circle cx="28" cy="28" r="1.8"/>
+                    <circle cx="40" cy="20" r="1.4"/>
+                    <circle cx="22" cy="44" r="1.6"/>
+                    <circle cx="120" cy="32" r="1.8"/>
+                  </g>
+                </svg>
+                <div class="lang-content">
+                  <div class="lang-origin-tag">Japanese</div>
+                  <div class="lang-native-text">日本語</div>
+                </div>
+              </div>
+              <div class="lang-popover" role="tooltip">
+                <div class="popover-arrow"></div>
+                <div class="popover-title">Japanese</div>
+                <div class="popover-badge n4">N4 Level</div>
+                <div class="popover-sub">JLPT N4 Level · Japan</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="hero-cta">
           <a href="#projects" class="btn btn-primary">View projects →</a>
@@ -1337,6 +1792,19 @@
   <section id="exposure">
     <div class="eyebrow">02 / Beyond the classroom</div>
     <div class="exposure-hero">
+      <!-- Floating Flight & Travel Emojis -->
+      <div class="exposure-floating-travel" aria-hidden="true">
+        <span class="flight-emoji fe-1">✈️</span>
+        <span class="flight-emoji fe-2">🛫</span>
+        <span class="flight-emoji fe-3">🧳</span>
+        <span class="flight-emoji fe-4">🌍</span>
+        <span class="flight-emoji fe-5">🎫</span>
+        <span class="flight-emoji fe-6">🗺️</span>
+        <span class="flight-emoji fe-7">🧭</span>
+        <span class="flight-emoji fe-8">🌴</span>
+        <span class="flight-emoji fe-9">🛬</span>
+        <span class="flight-emoji fe-10">🇲🇾</span>
+      </div>
       <div class="exposure-text">
         <h2 class="section-title exposure-title">International Exposure</h2>
         <p class="exposure-tagline">Exploring beyond the boundaries.</p>
@@ -1352,7 +1820,7 @@
   <section id="projects">
     <div class="eyebrow">03 / Build log</div>
     <h2 class="section-title">Projects</h2>
-    <p class="section-sub">Four systems, four different problems — health, civic infrastructure, AI travel, and consumer booking.</p>
+    <p class="section-sub">Six systems across health, civic infrastructure, AI travel, cognitive assistants, LLM fine-tuning, and consumer platforms.</p>
 
     <div class="proj-grid">
 
@@ -1541,10 +2009,141 @@
           <h3 class="glitch-hover" data-text="Ticket Booking System">Ticket Booking System</h3>
           <p>A BookMyShow-style ticket booking platform covering listings, seat selection, and the end-to-end booking flow.</p>
           <div class="proj-stack">
-            <span class="chip">Web</span>
-            <span class="chip">Database</span>
-            <span class="chip">Booking flow</span>
+            <span class="chip">Python</span>
+            <span class="chip">SQL Database</span>
+            <span class="chip">Booking Engine</span>
           </div>
+          <a href="https://github.com/SSDV19/Bus-Booking" target="_blank" rel="noopener" class="btn btn-primary proj-learn-more">View on GitHub →</a>
+        </div>
+      </div>
+
+      <!-- 🧠 Tell-Me-Like-I-m-5 (TMLI5) — AI Topic Simplifier -->
+      <div class="proj-card reveal" style="position:relative;">
+        <div class="proj-art" style="height: 160px; position:relative; overflow:hidden; background:#070E1C;">
+          <span class="proj-tag" style="background:linear-gradient(135deg,#3B82F6,#8B5CF6); color:#fff; border:none;">AI / LLM App</span>
+          <!-- Interactive 3-Level Simplifier SVG / Visual -->
+          <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;position:absolute;inset:0;">
+            <defs>
+              <linearGradient id="tmli5-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1E1B4B"/>
+                <stop offset="50%" stop-color="#312E81"/>
+                <stop offset="100%" stop-color="#0F172A"/>
+              </linearGradient>
+              <filter id="tmli5-glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <rect width="300" height="160" fill="url(#tmli5-grad)"/>
+            <!-- Tech grid backdrop -->
+            <g stroke="#38BDF8" stroke-width="0.5" opacity="0.15">
+              <line x1="0" y1="35" x2="300" y2="35"/>
+              <line x1="0" y1="85" x2="300" y2="85"/>
+              <line x1="0" y1="135" x2="300" y2="135"/>
+              <line x1="100" y1="0" x2="100" y2="160"/>
+              <line x1="200" y1="0" x2="200" y2="160"/>
+            </g>
+            <!-- 3 Abstraction Tiers Pills -->
+            <g transform="translate(18, 16)">
+              <rect x="0" y="0" width="76" height="22" rx="11" fill="rgba(56,189,248,0.2)" stroke="#38BDF8" stroke-width="0.9"/>
+              <text x="38" y="14" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="8.5" font-weight="600" fill="#E0F2FE">👶 Kid</text>
+              
+              <rect x="88" y="0" width="84" height="22" rx="11" fill="rgba(168,85,247,0.3)" stroke="#C084FC" stroke-width="1.2" filter="url(#tmli5-glow)"/>
+              <text x="130" y="14" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="8.5" font-weight="700" fill="#F3E8FF">🎓 Student</text>
+              
+              <rect x="184" y="0" width="80" height="22" rx="11" fill="rgba(244,63,94,0.2)" stroke="#FB7185" stroke-width="0.9"/>
+              <text x="224" y="14" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="8.5" font-weight="600" fill="#FFE4E6">⚡ Engineer</text>
+            </g>
+            <!-- Prompt input box simulation -->
+            <g transform="translate(18, 48)">
+              <rect width="264" height="30" rx="8" fill="rgba(15,23,42,0.85)" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+              <text x="10" y="19" font-family="IBM Plex Mono, monospace" font-size="8" fill="#94A3B8">&gt; Prompt: "Explain Quantum Entanglement"</text>
+              <circle cx="250" cy="15" r="3.5" fill="#38BDF8">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite"/>
+              </circle>
+            </g>
+            <!-- Claude response output simulation -->
+            <g transform="translate(18, 88)">
+              <rect width="264" height="56" rx="10" fill="rgba(30,27,75,0.85)" stroke="rgba(168,85,247,0.4)" stroke-width="1"/>
+              <text x="10" y="18" font-family="IBM Plex Sans, sans-serif" font-size="8" font-weight="600" fill="#C084FC">Claude 3.5 [Student Mode]:</text>
+              <text x="10" y="32" font-family="IBM Plex Sans, sans-serif" font-size="7.5" fill="#E2E8F0">"Two particles remain state-correlated across distance,</text>
+              <text x="10" y="44" font-family="IBM Plex Sans, sans-serif" font-size="7.5" fill="#A7F3D0">measuring one instantly determines the other."</text>
+            </g>
+          </svg>
+        </div>
+        <div class="proj-body">
+          <span class="new-idea-badge" style="color:#C084FC; border-color:rgba(192,132,252,0.4); background:rgba(147,51,234,0.12);">🧠 Cognitive AI App</span>
+          <h3 class="glitch-hover" data-text="Tell-Me-Like-I-m-5 (TMLI5)">Tell-Me-Like-I-m-5 (TMLI5)</h3>
+          <p>An AI-powered topic simplifier that distills complex technical concepts into three digestible comprehension tiers — Kid, Student, or Engineer — powered by React and the Claude API.</p>
+          <div class="proj-stack">
+            <span class="chip">React</span>
+            <span class="chip">Claude API</span>
+            <span class="chip">Prompt Eng</span>
+            <span class="chip">JavaScript</span>
+          </div>
+          <a href="https://github.com/SSDV19/Tell-Me-Like-I-m-5-TMLI5-" target="_blank" rel="noopener" class="btn btn-primary proj-learn-more" style="background:linear-gradient(135deg,#3B82F6,#8B5CF6); border:none; color:#fff;">View on GitHub →</a>
+        </div>
+      </div>
+
+      <!-- ⚡ Domain-Adapted LLM Fine-Tuning -->
+      <div class="proj-card reveal" style="position:relative;">
+        <div class="proj-art" style="height: 160px; position:relative; overflow:hidden; background:#04140D;">
+          <span class="proj-tag" style="background:linear-gradient(135deg,#10B981,#059669); color:#fff; border:none;">AI / Model Training</span>
+          <!-- Neural Loss & Parameter Weights Visualization -->
+          <svg viewBox="0 0 300 160" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;position:absolute;inset:0;">
+            <defs>
+              <linearGradient id="llm-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#062419"/>
+                <stop offset="100%" stop-color="#04120C"/>
+              </linearGradient>
+              <linearGradient id="loss-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#EF4444"/>
+                <stop offset="50%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+              <filter id="llm-glow">
+                <feGaussianBlur stdDeviation="2" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <rect width="300" height="160" fill="url(#llm-bg)"/>
+            <!-- Coordinate Grid lines -->
+            <g stroke="#064E3B" stroke-width="0.7" opacity="0.5">
+              <line x1="35" y1="20" x2="35" y2="135"/>
+              <line x1="35" y1="135" x2="285" y2="135"/>
+              <line x1="35" y1="95" x2="285" y2="95" stroke-dasharray="2 4"/>
+              <line x1="35" y1="55" x2="285" y2="55" stroke-dasharray="2 4"/>
+            </g>
+            <!-- LoRA Training Loss Curve -->
+            <path d="M 35,30 Q 65,108 105,114 T 185,120 T 275,124" fill="none" stroke="url(#loss-grad)" stroke-width="2.5" filter="url(#llm-glow)"/>
+            <!-- Animated Pulse Point on curve -->
+            <circle cx="275" cy="124" r="4" fill="#10B981" filter="url(#llm-glow)">
+              <animate attributeName="r" values="3;6;3" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- LoRA adapter rank & metric tags -->
+            <rect x="42" y="16" width="98" height="18" rx="9" fill="rgba(16,185,129,0.18)" stroke="#10B981" stroke-width="0.8"/>
+            <text x="91" y="28" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="#6EE7B7">LoRA r=16 · α=32</text>
+            <rect x="150" y="16" width="98" height="18" rx="9" fill="rgba(56,189,248,0.18)" stroke="#38BDF8" stroke-width="0.8"/>
+            <text x="199" y="28" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7.5" fill="#7DD3FC">Loss: 2.84 → 0.41</text>
+            <!-- Efficiency bar -->
+            <rect x="35" y="142" width="250" height="8" rx="4" fill="#062E20"/>
+            <rect x="35" y="142" width="220" height="8" rx="4" fill="#10B981">
+              <animate attributeName="width" from="30" to="220" dur="2.5s" fill="freeze"/>
+            </rect>
+            <text x="160" y="138" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="7" fill="#A7F3D0">PARAMETER EFFICIENCY: 94.2% LESS VRAM</text>
+          </svg>
+        </div>
+        <div class="proj-body">
+          <span class="debut-badge" style="color:#6EE7B7; border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.1);">⚡ Model Optimization</span>
+          <h3 class="glitch-hover" data-text="Domain-Adapted LLM Fine-Tuning">Domain-Adapted LLM Fine-Tuning</h3>
+          <p>Parameter-efficient fine-tuning (PEFT/LoRA) pipeline for specialized Small Language Models (SLMs) to outperform frontier models on domain tasks while slashing latency and inference compute cost.</p>
+          <div class="proj-stack">
+            <span class="chip">Python</span>
+            <span class="chip">PyTorch</span>
+            <span class="chip">LoRA / QLoRA</span>
+            <span class="chip">Hugging Face</span>
+          </div>
+          <a href="https://github.com/SSDV19/llm-finetune-project" target="_blank" rel="noopener" class="btn btn-primary proj-learn-more" style="background:linear-gradient(135deg,#10B981,#059669); border:none; color:#fff;">View on GitHub →</a>
         </div>
       </div>
 
@@ -1953,12 +2552,15 @@
         'DATA SCIENCE: Pandas, NumPy, Data Visualization libraries'
       ],
       projects: () => [
-        'SYSTEMS REGISTRY LOGS:',
-        '  [01] RDOC — Robotic Doctor heart/vitals alerts monitor',
-        '  [02] NCIE — National Grievance Engine (15+ AWS Services)',
-        '  [03] Ticket Booking — Interactive booking platform',
+        'SYSTEMS REGISTRY LOGS (6 Active Builds):',
+        '  [01] RDOC — Robotic Doctor heart/vitals alerts companion (rdoc.html)',
+        '  [02] NCIE / Project-77 — National Grievance Engine (15+ AWS Services)',
+        '  [03] VAZI — AI Geospatial Outing & Route Optimization (vazi.html)',
+        '  [04] TMLI5 — Multi-Tier AI Topic Simplifier (React + Claude API)',
+        '  [05] LLM Fine-Tune — PEFT/LoRA Domain Adaptation Pipeline',
+        '  [06] Bus-Booking — SQL & Python Terminal Booking System',
         '---',
-        'Type "project 2" to launch cloud details view.'
+        'Type "project 1", "project 2", or "project 3" to open project profiles.'
       ],
       contact: () => [
         'SECURE COMMS LINK HANDSHAKE:',
@@ -1999,16 +2601,28 @@
 
     // Project opening command shortcuts
     commands['project 1'] = () => {
-      window.location.hash = '#projects';
-      return ['[OK] Scrolling viewport focus to RDOC project profile.'];
+      setTimeout(() => window.location.href = 'rdoc.html', 600);
+      return ['[REDIRECT] Opening R-DOC / Robot Doctor profile in 600ms...'];
     };
     commands['project 2'] = () => {
-      setTimeout(() => window.location.href = 'project77.html', 800);
-      return ['[REDIRECT] Opening NCIE / Project 77 file logs in 800ms...'];
+      setTimeout(() => window.location.href = 'project77.html', 600);
+      return ['[REDIRECT] Opening NCIE / Project 77 file logs in 600ms...'];
     };
     commands['project 3'] = () => {
-      window.location.hash = '#projects';
-      return ['[OK] Scrolling viewport focus to Seat Selector.'];
+      setTimeout(() => window.location.href = 'vazi.html', 600);
+      return ['[REDIRECT] Opening VAZI AI Outing Platform in 600ms...'];
+    };
+    commands['project 4'] = () => {
+      window.open('https://github.com/SSDV19/Tell-Me-Like-I-m-5-TMLI5-', '_blank');
+      return ['[LINK] Opening Tell-Me-Like-I-m-5 GitHub repository...'];
+    };
+    commands['project 5'] = () => {
+      window.open('https://github.com/SSDV19/llm-finetune-project', '_blank');
+      return ['[LINK] Opening LLM Fine-Tune Project repository...'];
+    };
+    commands['project 6'] = () => {
+      window.open('https://github.com/SSDV19/Bus-Booking', '_blank');
+      return ['[LINK] Opening Bus-Booking GitHub repository...'];
     };
 
     function appendLine(text, className = '') {
